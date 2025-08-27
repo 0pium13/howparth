@@ -6,6 +6,12 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        'custom-background': '#000000',
+        'custom-secondary': '#1a1a2e',
+        'custom-accent': '#7c3aed',
+        'custom-hover': '#1a1a1a',
+        'custom-border': '#222222',
+        'custom-gray': '#666666',
         primary: {
           50: '#eff6ff',
           100: '#dbeafe',
@@ -33,6 +39,7 @@ module.exports = {
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
+        script: ['Dancing Script', 'cursive'],
       },
       animation: {
         'fade-in': 'fadeIn 0.5s ease-in-out',
