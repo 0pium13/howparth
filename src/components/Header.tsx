@@ -28,7 +28,7 @@ const Header: React.FC = () => {
     { name: 'AI CONTENT', path: '/ai-content' },
     { name: 'AUTOMATION', path: '/automation' },
     { name: 'SUPPORT', path: '/support' },
-  ];
+  ]; // Updated navigation items
 
   const isActive = (path: string) => {
     if (path === '/' && location.pathname === '/') return true;
