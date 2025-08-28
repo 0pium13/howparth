@@ -10,7 +10,7 @@ const Header: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
   const { scrollY } = useScroll();
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated } = useAuth();
   
   const headerOpacity = useTransform(scrollY, [0, 100], [0, 0.95]);
   const headerBlur = useTransform(scrollY, [0, 100], [0, 10]);

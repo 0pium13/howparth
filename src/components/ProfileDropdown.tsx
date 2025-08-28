@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { 
   User, 
   Settings, 
@@ -97,8 +97,8 @@ export const ProfileDropdown: React.FC<ProfileDropdownProps> = ({ isMobile = fal
     try {
       // Convert to base64 for demo (in production, upload to server)
       const reader = new FileReader();
-      reader.onload = async (e) => {
-        const base64 = e.target?.result as string;
+      reader.onload = async () => {
+        // const base64 = e.target?.result as string;
         // await updateProfile({ avatar: base64 });
         showSuccess('Avatar updated successfully');
         setIsUploadingAvatar(false);
@@ -130,7 +130,7 @@ export const ProfileDropdown: React.FC<ProfileDropdownProps> = ({ isMobile = fal
       y: 0,
       scale: 1,
       transition: {
-        type: "spring",
+        type: "spring" as const,
         stiffness: 300,
         damping: 30,
         duration: 0.3,

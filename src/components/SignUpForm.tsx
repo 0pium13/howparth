@@ -66,11 +66,13 @@ export const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess }) => {
 
     setErrors(newErrors);
     setIsValid(
-      formData.username && 
-      formData.email && 
-      formData.password && 
-      formData.confirmPassword && 
-      Object.keys(newErrors).length === 0
+      Boolean(
+        formData.username && 
+        formData.email && 
+        formData.password && 
+        formData.confirmPassword && 
+        Object.keys(newErrors).length === 0
+      )
     );
   }, [formData]);
 

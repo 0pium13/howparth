@@ -40,7 +40,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
     }
 
     setErrors(newErrors);
-    setIsValid(formData.email && formData.password && Object.keys(newErrors).length === 0);
+    setIsValid(Boolean(formData.email && formData.password && Object.keys(newErrors).length === 0));
   }, [formData]);
 
   const handleInputChange = (field: string, value: string | boolean) => {

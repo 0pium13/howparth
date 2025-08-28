@@ -1,4 +1,14 @@
-import { createHash } from 'crypto';
+// Browser-compatible hash function
+const hashString = (str: string): string => {
+  let hash = 0;
+  if (str.length === 0) return hash.toString();
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash; // Convert to 32-bit integer
+  }
+  return Math.abs(hash).toString(36);
+};
 
 export interface User {
   id: string;
@@ -38,9 +48,9 @@ const STORAGE_KEYS = {
 const SESSION_DURATION = 24 * 60 * 60 * 1000; // 24 hours
 const REMEMBER_ME_DURATION = 30 * 24 * 60 * 60 * 1000; // 30 days
 
-// Hash password using SHA-256 (in production, use bcrypt on server)
+// Hash password using browser-compatible function (in production, use bcrypt on server)
 const hashPassword = (password: string): string => {
-  return createHash('sha256').update(password).digest('hex');
+  return hashString(password);
 };
 
 // Secure storage with encryption (simplified for demo)
