@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, Search } from 'lucide-react';
 
 const Header: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -46,16 +46,28 @@ const Header: React.FC = () => {
     >
       <div className="max-w-8xl mx-auto px-4 md:px-8 py-4 md:py-6">
         <div className="flex items-center justify-between">
-          {/* Logo */}
+          {/* Logo - Centered on mobile, left on desktop */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
-            className="flex-shrink-0"
+            className="flex-shrink-0 lg:flex-shrink-0 lg:order-1 order-2 lg:order-none"
           >
             <Link to="/" className="text-xl md:text-2xl font-black tracking-wider hover:text-gray-300 transition-colors duration-300">
               HOWPARTH
             </Link>
+          </motion.div>
+
+          {/* Search Icon - Only visible on mobile */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="lg:hidden order-3"
+          >
+            <button className="p-2 text-secondary hover:text-gray-300 transition-colors duration-300">
+              <Search size={20} />
+            </button>
           </motion.div>
 
           {/* Desktop Navigation */}
@@ -136,7 +148,7 @@ const Header: React.FC = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.3 }}
-            className="lg:hidden p-2 text-secondary hover:text-gray-300 transition-colors duration-300"
+            className="lg:hidden p-2 text-secondary hover:text-gray-300 transition-colors duration-300 order-1"
             onClick={() => setIsOpen(!isOpen)}
             aria-label="Toggle menu"
           >

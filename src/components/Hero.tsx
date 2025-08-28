@@ -111,7 +111,7 @@ const Hero: React.FC = () => {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 1.2 }}
-          className="text-xl md:text-2xl lg:text-3xl text-gray-400 mb-20 max-w-4xl mx-auto leading-relaxed font-light text-center relative z-10"
+          className="text-lg md:text-xl lg:text-2xl xl:text-3xl text-gray-400 mb-16 md:mb-20 max-w-4xl mx-auto leading-relaxed font-light text-center relative z-10 px-4"
         >
           Transforming ideas into reality with cutting-edge{' '}
           <span className="text-secondary font-medium">artificial intelligence</span>
@@ -122,24 +122,24 @@ const Hero: React.FC = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 1.5 }}
-          className="flex justify-center items-center space-x-12 mb-20 relative z-10"
+          className="flex justify-center items-center space-x-6 md:space-x-8 lg:space-x-12 mb-16 md:mb-20 relative z-10 flex-wrap"
         >
           {[
-            { icon: <Brain className="w-8 h-8" />, text: "AI/ML" },
-            { icon: <Zap className="w-8 h-8" />, text: "Innovation" },
-            { icon: <Sparkles className="w-8 h-8" />, text: "Creativity" },
-            { icon: <Target className="w-8 h-8" />, text: "Precision" },
+            { icon: <Brain className="w-6 h-6 md:w-8 md:h-8" />, text: "AI/ML" },
+            { icon: <Zap className="w-6 h-6 md:w-8 md:h-8" />, text: "Innovation" },
+            { icon: <Sparkles className="w-6 h-6 md:w-8 md:h-8" />, text: "Creativity" },
+            { icon: <Target className="w-6 h-6 md:w-8 md:h-8" />, text: "Precision" },
           ].map((item, index) => (
             <motion.div
               key={index}
-              className="flex flex-col items-center space-y-3"
+              className="flex flex-col items-center space-y-2 md:space-y-3"
               whileHover={{ scale: 1.1 }}
               transition={{ type: "spring", stiffness: 300 }}
             >
-              <div className="p-4 bg-accent/20 backdrop-blur-sm rounded-full text-secondary border border-accent/30">
+              <div className="p-3 md:p-4 bg-accent/20 backdrop-blur-sm rounded-full text-secondary border border-accent/30">
                 {item.icon}
               </div>
-              <span className="text-sm text-gray-400 font-medium tracking-wider">{item.text}</span>
+              <span className="text-xs md:text-sm text-gray-400 font-medium tracking-wider text-center">{item.text}</span>
             </motion.div>
           ))}
         </motion.div>
@@ -166,7 +166,7 @@ const Hero: React.FC = () => {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 2.1 }}
-          className="flex justify-center items-center space-x-16 relative z-10"
+          className="flex justify-center items-center space-x-8 md:space-x-12 lg:space-x-16 relative z-10 flex-wrap"
         >
           {[
             { number: "50+", label: "AI Tools Mastered" },
@@ -179,8 +179,8 @@ const Hero: React.FC = () => {
               whileHover={{ scale: 1.1 }}
               transition={{ type: "spring", stiffness: 300 }}
             >
-              <div className="text-3xl font-black text-secondary">{stat.number}</div>
-              <div className="text-sm text-gray-400 tracking-wider">{stat.label}</div>
+              <div className="text-2xl md:text-3xl font-black text-secondary">{stat.number}</div>
+              <div className="text-xs md:text-sm text-gray-400 tracking-wider text-center">{stat.label}</div>
             </motion.div>
           ))}
         </motion.div>

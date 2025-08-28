@@ -1481,3 +1481,85 @@ html {
   writing-mode: horizontal-tb !important;
   text-orientation: mixed !important;
 }
+
+/* Mobile Header Layout */
+@media (max-width: 1023px) {
+  .flex.items-center.justify-between {
+    position: relative;
+  }
+  
+  .flex.items-center.justify-between > div:nth-child(1) {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  
+  .flex.items-center.justify-between > div:nth-child(2) {
+    position: absolute;
+    right: 0;
+  }
+  
+  .flex.items-center.justify-between > button {
+    position: absolute;
+    left: 0;
+  }
+}
+
+/* Mobile Hero Section Optimization */
+@media (max-width: 768px) {
+  .hero-content {
+    padding: 0 1rem;
+    text-align: center;
+  }
+  
+  .hero-content .text-6xl {
+    font-size: 3rem;
+    line-height: 1;
+  }
+  
+  .hero-content .text-xl {
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+  
+  .hero-content .flex.justify-center.items-center.space-x-12 {
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+  }
+  
+  .hero-content .flex.justify-center.items-center.space-x-12 > div {
+    flex: 0 0 auto;
+  }
+  
+  .hero-content .flex.justify-center.items-center.space-x-16 {
+    flex-direction: column;
+    gap: 1.5rem;
+    align-items: center;
+  }
+  
+  .explore-work-btn {
+    width: 100%;
+    max-width: 280px;
+    margin: 0 auto;
+  }
+}
+
+/* Tablet Hero Section Optimization */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .hero-content .text-6xl {
+    font-size: 4rem;
+  }
+  
+  .hero-content .text-xl {
+    font-size: 1.25rem;
+  }
+  
+  .hero-content .flex.justify-center.items-center.space-x-12 {
+    gap: 2rem;
+  }
+  
+  .hero-content .flex.justify-center.items-center.space-x-16 {
+    gap: 3rem;
+  }
+}
