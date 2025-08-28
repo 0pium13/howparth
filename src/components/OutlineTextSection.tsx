@@ -188,7 +188,7 @@ const OutlineTextSection: React.FC = () => {
             </motion.div>
             
             <AnimatedText
-              text="IT'S NOT JUST ABOUT CREATING CONTENT — IT'S ABOUT MAKING IT INTELLIGENT."
+                              text="Smart ideas. Smarter execution."
               type="word"
               animation="slideUp"
               className="text-lg text-gray-400 leading-relaxed font-light tracking-wide relative z-10"
