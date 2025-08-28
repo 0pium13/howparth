@@ -259,7 +259,8 @@ const ProcessSection: React.FC = () => {
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: isInView ? 1 : 0, scale: isInView ? 1 : 0.8 }}
                   transition={{ duration: 0.5, delay: card.delay + 0.2 }}
-                  className="text-6xl font-black text-accent/30 mb-6 tracking-wider"
+                  className="text-6xl font-black text-accent/30 mb-6 tracking-wider relative z-10"
+                  style={{ transform: 'rotate(0deg)' }}
                 >
                   {card.number}
                 </motion.div>

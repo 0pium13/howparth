@@ -1434,3 +1434,18 @@ html {
 .process-card-premium:hover .ambient-glow {
   opacity: 1;
 }
+
+/* Ensure text content maintains proper orientation */
+.process-card-premium * {
+  transform: rotate(0deg) !important;
+}
+
+.process-card-premium .text-6xl,
+.process-card-premium .text-2xl,
+.process-card-premium .text-3xl,
+.process-card-premium .text-base,
+.process-card-premium .text-lg {
+  transform: rotate(0deg) !important;
+  writing-mode: horizontal-tb !important;
+  text-orientation: mixed !important;
+}
