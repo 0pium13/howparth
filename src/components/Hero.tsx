@@ -4,11 +4,14 @@ import { Link } from 'react-router-dom';
 import { Brain, Zap, Sparkles, Target } from 'lucide-react';
 import { createSolarScrollHandler, createIntersectionObserver } from '../utils/performance';
 import { initializeSmoothGradient } from '../utils/smoothGradientController';
+import { useAuth } from '../contexts/AuthContext';
+import { UserStatusPanel } from './UserStatusPanel';
 
 const Hero: React.FC = () => {
   const [logoRevealed, setLogoRevealed] = useState(false);
   const controls = useAnimation();
   const heroRef = useRef<HTMLElement>(null);
+  const { user, isAuthenticated } = useAuth();
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -113,9 +116,22 @@ const Hero: React.FC = () => {
           transition={{ duration: 1, delay: 1.2 }}
           className="text-lg md:text-xl lg:text-2xl xl:text-3xl text-gray-400 mb-16 md:mb-20 max-w-4xl mx-auto leading-relaxed font-light text-center relative z-10 px-4"
         >
-          Transforming ideas into reality with cutting-edge{' '}
-          <span className="text-secondary font-medium">artificial intelligence</span>
+          {isAuthenticated && user ? (
+            <>
+              Welcome, <span className="text-secondary font-medium">{user.username}</span>!{' '}
+              Ready to transform ideas into reality with cutting-edge{' '}
+              <span className="text-secondary font-medium">artificial intelligence</span>
+            </>
+          ) : (
+            <>
+              Transforming ideas into reality with cutting-edge{' '}
+              <span className="text-secondary font-medium">artificial intelligence</span>
+            </>
+          )}
         </motion.p>
+
+        {/* User Status Panel - Only show when authenticated */}
+        {isAuthenticated && user && <UserStatusPanel />}
 
         {/* Feature Icons - Below subtitle */}
         <motion.div

@@ -106,29 +106,56 @@ const Header: React.FC = () => {
               </motion.div>
             ))}
             
-            {/* Login Link */}
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: 0.7 }}
-            >
-              <Link
-                to="/login"
-                className={`relative text-sm font-medium tracking-wider hover:text-gray-300 transition-colors duration-300 ${
-                  isActive('/login') ? 'text-secondary' : 'text-gray-400'
-                }`}
-              >
-                LOGIN
-                {isActive('/login') && (
-                  <motion.div
-                    layoutId="activeTab"
-                    className="absolute -bottom-1 left-0 right-0 h-0.5 bg-secondary"
-                    initial={false}
-                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                  />
-                )}
-              </Link>
-            </motion.div>
+            {/* Login/Signup Links - Only show when not authenticated */}
+            {!isAuthenticated && (
+              <>
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: 0.7 }}
+                >
+                  <Link
+                    to="/login"
+                    className={`relative text-sm font-medium tracking-wider hover:text-gray-300 transition-colors duration-300 ${
+                      isActive('/login') ? 'text-secondary' : 'text-gray-400'
+                    }`}
+                  >
+                    LOGIN
+                    {isActive('/login') && (
+                      <motion.div
+                        layoutId="activeTab"
+                        className="absolute -bottom-1 left-0 right-0 h-0.5 bg-secondary"
+                        initial={false}
+                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                      />
+                    )}
+                  </Link>
+                </motion.div>
+                
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: 0.8 }}
+                >
+                  <Link
+                    to="/signup"
+                    className={`relative text-sm font-medium tracking-wider hover:text-gray-300 transition-colors duration-300 ${
+                      isActive('/signup') ? 'text-secondary' : 'text-gray-400'
+                    }`}
+                  >
+                    SIGN UP
+                    {isActive('/signup') && (
+                      <motion.div
+                        layoutId="activeTab"
+                        className="absolute -bottom-1 left-0 right-0 h-0.5 bg-secondary"
+                        initial={false}
+                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                      />
+                    )}
+                  </Link>
+                </motion.div>
+              </>
+            )}
           </motion.nav>
 
           {/* CTA Button or Profile Dropdown */}

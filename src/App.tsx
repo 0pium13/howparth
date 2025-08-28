@@ -1,4 +1,4 @@
-import React, { Suspense, lazy } from 'react';
+import React, { Suspense, lazy, useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -11,8 +11,9 @@ import HomepageNav from './components/HomepageNav';
 import Contact from './pages/Contact';
 import LoginPage from './pages/LoginPage';
 import SignUpPage from './pages/SignUpPage';
-import { AuthProvider } from './contexts/AuthContext';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ToastManager, useToast } from './components/Toast';
+import { WelcomeToast } from './components/WelcomeToast';
 import './App.css';
 
 // Lazy load heavy components for better performance
@@ -28,6 +29,21 @@ const LoadingSpinner = () => (
 
 function AppContent() {
   const { toasts, removeToast } = useToast();
+  const [showWelcomeToast, setShowWelcomeToast] = useState(false);
+  const [welcomeUsername, setWelcomeUsername] = useState('');
+  const { user, isAuthenticated } = useAuth();
+
+  // Handle welcome toast when user logs in
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      setWelcomeUsername(user.username);
+      setShowWelcomeToast(true);
+    }
+  }, [isAuthenticated, user]);
+
+  const handleWelcomeToastClose = () => {
+    setShowWelcomeToast(false);
+  };
 
   return (
     <ErrorBoundary>
@@ -84,6 +100,11 @@ function AppContent() {
             <Footer />
           </ErrorBoundary>
           <ToastManager toasts={toasts} onClose={removeToast} />
+          <WelcomeToast 
+            username={welcomeUsername}
+            isVisible={showWelcomeToast}
+            onClose={handleWelcomeToastClose}
+          />
         </div>
       </Router>
     </ErrorBoundary>

@@ -54,7 +54,7 @@ export const ProfileDropdown: React.FC<ProfileDropdownProps> = ({ isMobile = fal
   const handleLogout = async () => {
     try {
       await logout();
-      showSuccess('Logged out successfully');
+      showSuccess('You\'ve been logged out');
       navigate('/');
     } catch (error) {
       showError('Failed to logout', 'Please try again');
