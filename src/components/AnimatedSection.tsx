@@ -35,42 +35,42 @@ const AnimatedSection: React.FC = () => {
 
   const sections = [
     {
-      icon: <Brain className="w-12 h-12" />,
+      icon: <Brain className="w-10 h-10 md:w-12 md:h-12" />,
       title: "I specialize in AI-driven content creation",
       description: "Leveraging cutting-edge artificial intelligence to create compelling, engaging content that resonates with your audience and drives results.",
       animation: "slideUp" as const,
       delay: 0.2
     },
     {
-      icon: <Sparkles className="w-12 h-12" />,
+      icon: <Sparkles className="w-10 h-10 md:w-12 md:h-12" />,
       title: "From concept to execution, I deliver premium results",
       description: "Every project is crafted with precision, from initial brainstorming to final delivery, ensuring exceptional quality and client satisfaction.",
       animation: "slideRight" as const,
       delay: 0.4
     },
     {
-      icon: <Zap className="w-12 h-12" />,
+      icon: <Zap className="w-10 h-10 md:w-12 md:h-12" />,
       title: "Leveraging the power of artificial intelligence",
       description: "Combining human creativity with AI capabilities to produce innovative solutions that push boundaries and exceed expectations.",
       animation: "slideLeft" as const,
       delay: 0.6
     },
     {
-      icon: <Target className="w-12 h-12" />,
+      icon: <Target className="w-10 h-10 md:w-12 md:h-12" />,
       title: "Data-driven strategies for maximum impact",
       description: "Every decision is backed by analytics and insights, ensuring your content reaches the right audience at the right time for optimal engagement.",
       animation: "slideUp" as const,
       delay: 0.8
     },
     {
-      icon: <Award className="w-12 h-12" />,
+      icon: <Award className="w-10 h-10 md:w-12 md:h-12" />,
       title: "Award-winning quality and innovation",
       description: "Consistently delivering exceptional results that exceed expectations and set new standards in AI-powered content creation.",
       animation: "slideRight" as const,
       delay: 1.0
     },
     {
-      icon: <Users className="w-12 h-12" />,
+      icon: <Users className="w-10 h-10 md:w-12 md:h-12" />,
       title: "Client-focused collaboration and support",
       description: "Building lasting partnerships through transparent communication, regular updates, and dedicated support throughout your project journey.",
       animation: "slideLeft" as const,
@@ -79,7 +79,7 @@ const AnimatedSection: React.FC = () => {
   ];
 
   return (
-    <section className="py-32 bg-primary relative overflow-hidden">
+    <section className="py-20 md:py-28 lg:py-32 bg-primary relative overflow-hidden">
       {/* Purple Glow Chunks */}
       <div className="absolute inset-0 pointer-events-none">
         {[...Array(10)].map((_, i) => (
@@ -146,16 +146,16 @@ const AnimatedSection: React.FC = () => {
           {/* Section Header */}
           <motion.div
             ref={ref}
-            className="text-center mb-24"
+            className="text-center mb-16 md:mb-20 lg:mb-24 pt-8 md:pt-12"
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: isInView ? 1 : 0, y: isInView ? 0 : 50 }}
             transition={{ duration: 0.8 }}
           >
             <AnimatedText
-              text="TRANSFORMING IDEAS THROUGH INNOVATION"
+              text="AI-POWERED CREATIVE SOLUTIONS"
               type="word"
               animation="slideUp"
-              className="text-4xl md:text-6xl font-black text-secondary mb-8 tracking-[0.2em] leading-tight"
+              className="text-3xl md:text-5xl lg:text-6xl font-black text-secondary mb-6 md:mb-8 tracking-[0.1em] md:tracking-[0.2em] leading-tight"
               stagger={0.1}
               delay={0.2}
             />
@@ -163,18 +163,18 @@ const AnimatedSection: React.FC = () => {
               text="Where creativity meets artificial intelligence to create extraordinary experiences"
               type="word"
               animation="fadeIn"
-              className="text-xl md:text-2xl text-gray-400 max-w-3xl mx-auto font-light tracking-wide"
+              className="text-lg md:text-xl lg:text-2xl text-gray-400 max-w-3xl mx-auto font-light tracking-wide px-4"
               stagger={0.05}
               delay={0.8}
             />
           </motion.div>
 
           {/* Animated Sections */}
-          <div className="space-y-24">
+          <div className="space-y-16 md:space-y-20 lg:space-y-24">
             {sections.map((section, index) => (
               <motion.div
                 key={index}
-                className={`flex flex-col lg:flex-row items-center gap-12 ${
+                className={`flex flex-col lg:flex-row items-center gap-8 md:gap-10 lg:gap-12 ${
                   index % 2 === 1 ? 'lg:flex-row-reverse' : ''
                 }`}
                 initial={{ opacity: 0, y: 100 }}
@@ -198,7 +198,7 @@ const AnimatedSection: React.FC = () => {
                   }}
                   transition={{ type: "spring", stiffness: 300 }}
                 >
-                  <div className="w-24 h-24 bg-accent/20 border border-accent/30 rounded-2xl flex items-center justify-center text-secondary shadow-2xl">
+                  <div className="w-20 h-20 md:w-24 md:h-24 bg-accent/20 border border-accent/30 rounded-2xl flex items-center justify-center text-secondary shadow-2xl">
                     {section.icon}
                   </div>
                 </motion.div>

@@ -2,12 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, Search } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
+import { ProfileDropdown } from './ProfileDropdown';
 
 const Header: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
   const { scrollY } = useScroll();
+  const { isAuthenticated, user } = useAuth();
   
   const headerOpacity = useTransform(scrollY, [0, 100], [0, 0.95]);
   const headerBlur = useTransform(scrollY, [0, 100], [0, 10]);
@@ -128,32 +131,47 @@ const Header: React.FC = () => {
             </motion.div>
           </motion.nav>
 
-          {/* CTA Button */}
+          {/* CTA Button or Profile Dropdown */}
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.4 }}
             className="hidden lg:block"
           >
-            <Link
-              to="/contact"
-              className="bg-black text-white px-6 py-3 rounded-md font-semibold uppercase tracking-wider hover:bg-gray-800 transition-colors duration-300"
-            >
-              START PROJECT
-            </Link>
+            {isAuthenticated ? (
+              <ProfileDropdown />
+            ) : (
+              <Link
+                to="/contact"
+                className="bg-black text-white px-6 py-3 rounded-md font-semibold uppercase tracking-wider hover:bg-gray-800 transition-colors duration-300"
+              >
+                START PROJECT
+              </Link>
+            )}
           </motion.div>
 
-          {/* Mobile Menu Button */}
-          <motion.button
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.3 }}
-            className="lg:hidden p-2 text-secondary hover:text-gray-300 transition-colors duration-300 order-1"
-            onClick={() => setIsOpen(!isOpen)}
-            aria-label="Toggle menu"
-          >
-            {isOpen ? <X size={24} /> : <Menu size={24} />}
-          </motion.button>
+                      {/* Mobile Menu Button or Profile */}
+            {isAuthenticated ? (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.3 }}
+                className="lg:hidden order-1"
+              >
+                <ProfileDropdown isMobile />
+              </motion.div>
+            ) : (
+              <motion.button
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.3 }}
+                className="lg:hidden p-2 text-secondary hover:text-gray-300 transition-colors duration-300 order-1"
+                onClick={() => setIsOpen(!isOpen)}
+                aria-label="Toggle menu"
+              >
+                {isOpen ? <X size={24} /> : <Menu size={24} />}
+              </motion.button>
+            )}
         </div>
 
         {/* Mobile Navigation */}
@@ -186,22 +204,41 @@ const Header: React.FC = () => {
               </motion.div>
             ))}
             
-            {/* Mobile Login Link */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: isOpen ? 1 : 0, x: isOpen ? 0 : -20 }}
-              transition={{ duration: 0.3, delay: 0.4 }}
-            >
-              <Link
-                to="/login"
-                className={`block text-lg font-medium tracking-wider hover:text-gray-300 transition-colors duration-300 ${
-                  isActive('/login') ? 'text-secondary' : 'text-gray-400'
-                }`}
-                onClick={() => setIsOpen(false)}
-              >
-                LOGIN
-              </Link>
-            </motion.div>
+            {/* Mobile Login/Signup Links */}
+            {!isAuthenticated && (
+              <>
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: isOpen ? 1 : 0, x: isOpen ? 0 : -20 }}
+                  transition={{ duration: 0.3, delay: 0.4 }}
+                >
+                  <Link
+                    to="/login"
+                    className={`block text-lg font-medium tracking-wider hover:text-gray-300 transition-colors duration-300 ${
+                      isActive('/login') ? 'text-secondary' : 'text-gray-400'
+                    }`}
+                    onClick={() => setIsOpen(false)}
+                  >
+                    LOGIN
+                  </Link>
+                </motion.div>
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: isOpen ? 1 : 0, x: isOpen ? 0 : -20 }}
+                  transition={{ duration: 0.3, delay: 0.5 }}
+                >
+                  <Link
+                    to="/signup"
+                    className={`block text-lg font-medium tracking-wider hover:text-gray-300 transition-colors duration-300 ${
+                      isActive('/signup') ? 'text-secondary' : 'text-gray-400'
+                    }`}
+                    onClick={() => setIsOpen(false)}
+                  >
+                    SIGN UP
+                  </Link>
+                </motion.div>
+              </>
+            )}
             
             <motion.div
               initial={{ opacity: 0, x: -20 }}

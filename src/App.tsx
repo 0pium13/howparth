@@ -11,6 +11,8 @@ import HomepageNav from './components/HomepageNav';
 import Contact from './pages/Contact';
 import LoginPage from './pages/LoginPage';
 import SignUpPage from './pages/SignUpPage';
+import { AuthProvider } from './contexts/AuthContext';
+import { ToastManager, useToast } from './components/Toast';
 import './App.css';
 
 // Lazy load heavy components for better performance
@@ -24,7 +26,9 @@ const LoadingSpinner = () => (
   </div>
 );
 
-function App() {
+function AppContent() {
+  const { toasts, removeToast } = useToast();
+
   return (
     <ErrorBoundary>
       <Router>
@@ -79,9 +83,18 @@ function App() {
           <ErrorBoundary>
             <Footer />
           </ErrorBoundary>
+          <ToastManager toasts={toasts} onClose={removeToast} />
         </div>
       </Router>
     </ErrorBoundary>
+  );
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   );
 }
 
