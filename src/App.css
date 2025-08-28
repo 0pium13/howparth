@@ -1350,32 +1350,87 @@ html {
   flex-shrink: 0;
 }
 
-/* Apple-Style Light Ray Effects */
-.light-ray {
+/* Ultra-Premium Apple-Level Particle Effects */
+.premium-particle {
   background: linear-gradient(
     to top,
-    rgba(255, 255, 255, 0.8) 0%,
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(255, 255, 255, 0.7) 20%,
     rgba(255, 255, 255, 0.4) 50%,
-    rgba(255, 255, 255, 0.1) 100%
+    rgba(255, 255, 255, 0.2) 70%,
+    rgba(255, 255, 255, 0.05) 90%,
+    transparent 100%
   );
-  filter: blur(0.5px);
-  box-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+  transform-origin: bottom;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
 }
 
-.process-card-light-ray {
+.premium-particle::before {
+  content: '';
   position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
   bottom: 0;
   background: linear-gradient(
     to top,
-    rgba(255, 255, 255, 0.9) 0%,
-    rgba(255, 255, 255, 0.6) 30%,
-    rgba(255, 255, 255, 0.3) 60%,
-    rgba(255, 255, 255, 0.1) 80%,
+    rgba(255, 255, 255, 0.3) 0%,
     transparent 100%
   );
-  filter: blur(0.3px);
-  box-shadow: 
-    0 0 4px rgba(255, 255, 255, 0.2),
-    0 0 8px rgba(255, 255, 255, 0.1);
-  transform-origin: bottom;
+  opacity: 0;
+  animation: particleGlow 1.2s ease-out infinite;
+}
+
+@keyframes particleGlow {
+  0%, 100% { opacity: 0; }
+  50% { opacity: 1; }
+}
+
+/* Enhanced card hover effects */
+.process-card-premium {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.process-card-premium::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(
+    circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(255, 255, 255, 0.1) 0%,
+    transparent 70%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.process-card-premium:hover::before {
+  opacity: 1;
+}
+
+/* Ambient glow system */
+.ambient-glow {
+  position: absolute;
+  inset: -20px;
+  background: radial-gradient(
+    circle at center,
+    rgba(255, 255, 255, 0.08) 0%,
+    rgba(255, 255, 255, 0.04) 30%,
+    transparent 70%
+  );
+  filter: blur(20px);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+
+.process-card-premium:hover .ambient-glow {
+  opacity: 1;
 }
