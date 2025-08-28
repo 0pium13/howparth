@@ -152,7 +152,7 @@ const Hero: React.FC = () => {
           className="mb-20 relative z-10"
         >
           <Link to="/projects">
-            <button className="btn-primary explore-work-btn">
+            <button className="explore-work-btn">
               <span>EXPLORE MY WORK</span>
               <svg className="btn-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
                 <path d="M10 15l5-5-5-5M5 10h10" stroke="currentColor" strokeWidth="2" fill="none"/>
