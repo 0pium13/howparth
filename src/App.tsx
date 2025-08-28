@@ -11,6 +11,9 @@ import HomepageNav from './components/HomepageNav';
 import Contact from './pages/Contact';
 import LoginPage from './pages/LoginPage';
 import SignUpPage from './pages/SignUpPage';
+import AIContentPage from './pages/AIContentPage';
+import AutomationPage from './pages/AutomationPage';
+import SupportPage from './pages/SupportPage';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ToastManager, useToast } from './components/Toast';
 import { WelcomeToast } from './components/WelcomeToast';
@@ -92,6 +95,21 @@ function AppContent() {
               <Route path="/signup" element={
                 <ErrorBoundary>
                   <SignUpPage />
+                </ErrorBoundary>
+              } />
+              <Route path="/ai-content" element={
+                <ErrorBoundary>
+                  <AIContentPage />
+                </ErrorBoundary>
+              } />
+              <Route path="/automation" element={
+                <ErrorBoundary>
+                  <AutomationPage />
+                </ErrorBoundary>
+              } />
+              <Route path="/support" element={
+                <ErrorBoundary>
+                  <SupportPage />
                 </ErrorBoundary>
               } />
             </Routes>

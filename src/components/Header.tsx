@@ -25,10 +25,9 @@ const Header: React.FC = () => {
   }, []);
 
   const navItems = [
-    { name: 'HOME', path: '/' },
-    { name: 'WORK', path: '/projects' },
-    { name: 'ABOUT', path: '/about' },
-    { name: 'CONTACT', path: '/contact' },
+    { name: 'AI CONTENT', path: '/ai-content' },
+    { name: 'AUTOMATION', path: '/automation' },
+    { name: 'SUPPORT', path: '/support' },
   ];
 
   const isActive = (path: string) => {

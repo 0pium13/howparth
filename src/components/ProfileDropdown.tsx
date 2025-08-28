@@ -269,6 +269,27 @@ export const ProfileDropdown: React.FC<ProfileDropdownProps> = ({ isMobile = fal
                     <p className="text-gray-400 text-xs truncate">{user?.email}</p>
                   </div>
                 </div>
+
+                {/* Login Details Section */}
+                <div className="mt-4 p-3 bg-gray-800/30 rounded-lg border border-gray-700/50">
+                  <h4 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
+                    Login Details
+                  </h4>
+                  <div className="space-y-1">
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs text-gray-400">Username:</span>
+                      <span className="text-xs text-white font-medium">{user?.username}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs text-gray-400">Email:</span>
+                      <span className="text-xs text-white font-medium">{user?.email}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs text-gray-400">Status:</span>
+                      <span className="text-xs text-green-400 font-medium">Active</span>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <div className="py-2">
