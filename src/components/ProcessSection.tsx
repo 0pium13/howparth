@@ -1,15 +1,33 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion, useInView } from 'framer-motion';
 import AnimatedText from './AnimatedText';
 import { Brain, Layers, Target, ArrowUpRight } from 'lucide-react';
 
 const ProcessSection: React.FC = () => {
   const ref = React.useRef(null);
+  const [hoveredCard, setHoveredCard] = useState<number | null>(null);
   const isInView = useInView(ref, {
     once: true,
     amount: 0.2,
     margin: '-100px 0px -100px 0px'
   });
+
+  // Generate multiple light rays with varying properties
+  const generateLightRays = (cardIndex: number) => {
+    const rays = [];
+    for (let i = 0; i < 8; i++) {
+      rays.push({
+        id: i,
+        x: Math.random() * 100, // Random horizontal position
+        width: Math.random() * 2 + 0.5, // Random width (0.5-2.5px)
+        opacity: Math.random() * 0.6 + 0.2, // Random opacity (0.2-0.8)
+        duration: Math.random() * 1.5 + 1, // Random duration (1-2.5s)
+        delay: Math.random() * 0.3, // Random delay (0-0.3s)
+        height: Math.random() * 40 + 60, // Random height (60-100%)
+      });
+    }
+    return rays;
+  };
 
   const processCards = [
     {
@@ -111,8 +129,48 @@ const ProcessSection: React.FC = () => {
               transition={{ duration: 0.8, delay: card.delay }}
               whileHover={{ y: -10 }}
               className="group relative"
+              onHoverStart={() => setHoveredCard(index)}
+              onHoverEnd={() => setHoveredCard(null)}
             >
-              <div className="bg-accent/5 border border-accent/20 p-12 hover:bg-accent/10 transition-all duration-300">
+              <div className={`bg-accent/5 border border-accent/20 p-12 transition-all duration-500 relative overflow-hidden ${
+                hoveredCard === index 
+                  ? 'bg-accent/10 border-accent/40 shadow-2xl shadow-accent/20' 
+                  : 'hover:bg-accent/10'
+              }`}>
+                {/* Apple-Style Light Ray Animation */}
+                {hoveredCard === index && (
+                  <div className="absolute inset-0 pointer-events-none">
+                    {generateLightRays(index).map((ray) => (
+                      <motion.div
+                        key={ray.id}
+                        className="process-card-light-ray"
+                        style={{
+                          left: `${ray.x}%`,
+                          width: `${ray.width}px`,
+                          height: `${ray.height}%`,
+                          opacity: ray.opacity,
+                        }}
+                        initial={{
+                          scaleY: 0,
+                          opacity: 0,
+                        }}
+                        animate={{
+                          scaleY: 1,
+                          opacity: ray.opacity,
+                        }}
+                        exit={{
+                          scaleY: 0,
+                          opacity: 0,
+                        }}
+                        transition={{
+                          duration: ray.duration,
+                          delay: ray.delay,
+                          ease: [0.25, 0.46, 0.45, 0.94], // Apple's custom easing
+                        }}
+                      />
+                    ))}
+                  </div>
+                )}
                 {/* Number */}
                 <motion.div
                   initial={{ opacity: 0, scale: 0.8 }}

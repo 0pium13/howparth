@@ -1349,3 +1349,33 @@ html {
 .marquee span {
   flex-shrink: 0;
 }
+
+/* Apple-Style Light Ray Effects */
+.light-ray {
+  background: linear-gradient(
+    to top,
+    rgba(255, 255, 255, 0.8) 0%,
+    rgba(255, 255, 255, 0.4) 50%,
+    rgba(255, 255, 255, 0.1) 100%
+  );
+  filter: blur(0.5px);
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+}
+
+.process-card-light-ray {
+  position: absolute;
+  bottom: 0;
+  background: linear-gradient(
+    to top,
+    rgba(255, 255, 255, 0.9) 0%,
+    rgba(255, 255, 255, 0.6) 30%,
+    rgba(255, 255, 255, 0.3) 60%,
+    rgba(255, 255, 255, 0.1) 80%,
+    transparent 100%
+  );
+  filter: blur(0.3px);
+  box-shadow: 
+    0 0 4px rgba(255, 255, 255, 0.2),
+    0 0 8px rgba(255, 255, 255, 0.1);
+  transform-origin: bottom;
+}
