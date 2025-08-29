@@ -1,5 +1,6 @@
 const OpenAI = require('openai');
-const { logger } = require('../utils/logger');
+const { Pinecone } = require('@pinecone-database/pinecone');
+const logger = require('../utils/logger');
 
 class RAGService {
   constructor() {
@@ -7,306 +8,425 @@ class RAGService {
       apiKey: process.env.OPENAI_API_KEY,
     });
     
-    // Vector embeddings storage (in production, use Pinecone or Weaviate)
-    this.vectorStore = new Map();
+    // Initialize Pinecone
+    this.pinecone = new Pinecone({
+      apiKey: process.env.PINECONE_API_KEY,
+    });
     
-    // Initialize with transcript data
-    this.initializeVectorStore();
+    this.indexName = process.env.PINECONE_INDEX_NAME || 'howparth-knowledge';
+    this.index = null;
+    this.namespace = 'transcripts';
+    
+    // Initialize index
+    this.initializeIndex();
   }
 
-  // Initialize vector store with transcript embeddings
-  async initializeVectorStore() {
+  /**
+   * Initialize Pinecone index
+   */
+  async initializeIndex() {
     try {
-      const transcripts = [
-        {
-          id: 'ai-agent-orchestration',
-          title: 'AI Agent Orchestration',
-          content: `
-Multi-agent systems require sophisticated orchestration patterns for effective coordination. 
-Key patterns include Master-Slave for centralized control, Peer-to-Peer for decentralized collaboration, 
-Pipeline for sequential processing, and Broadcast for one-to-many communication.
-
-Technical implementation involves message queues (Redis/RabbitMQ), distributed state management, 
-error handling with graceful degradation, and comprehensive monitoring for agent performance tracking.
-
-Best practices include agent isolation to prevent interference, horizontal scaling for scalability, 
-secure authentication and authorization, and comprehensive observability with logging and metrics.
-          `,
-          tags: ['multi-agent', 'orchestration', 'distributed-systems', 'communication-protocols']
-        },
-        {
-          id: 'custom-mcp-server',
-          title: 'Custom MCP Server Development',
-          content: `
-MCP (Model Context Protocol) enables AI models to interact with external tools and APIs through 
-standardized protocols. Implementation involves RESTful APIs for tool interactions, secure authentication 
-and API key management, rate limiting for abuse prevention, and intelligent caching strategies.
-
-Tool development includes creating specialized domain tools, building API wrappers for external services, 
-implementing data transformation and validation, and comprehensive integration testing.
-
-Deployment strategies include containerization with Docker, load balancing across multiple instances, 
-real-time performance monitoring, and robust backup and recovery procedures.
-          `,
-          tags: ['mcp', 'api-development', 'tool-integration', 'server-architecture']
-        },
-        {
-          id: 'ai-saas-building',
-          title: 'AI SaaS Platform Development',
-          content: `
-AI SaaS platforms require sophisticated architecture patterns including multi-tenancy for isolated 
-customer environments, microservices for modular scalability, API-first design for all interactions, 
-and event-driven architecture for asynchronous processing.
-
-AI integration strategies involve efficient model serving and inference, pipeline orchestration for 
-complex workflows, secure data management, and model versioning for multiple deployments.
-
-Business model implementation includes flexible subscription management, usage tracking and billing, 
-feature flags for gradual rollout, and comprehensive analytics for customer behavior insights.
-          `,
-          tags: ['saas', 'ai-platform', 'business-models', 'multi-tenancy', 'microservices']
-        },
-        {
-          id: 'enterprise-ai-integration',
-          title: 'Enterprise AI Integration',
-          content: `
-Enterprise AI integration requires careful consideration of legacy system connectivity, data governance 
-frameworks, scalability planning for large deployments, and organizational change management.
-
-Integration patterns include API gateways for centralized management, event streaming with Kafka/Pulsar, 
-data lakes for centralized analytics, and service mesh for microservices communication.
-
-Security and compliance involve zero trust architecture, data classification and protection, 
-compliance frameworks (SOC2, ISO27001, HIPAA), and vendor risk assessment for third-party services.
-          `,
-          tags: ['enterprise', 'integration', 'security', 'compliance', 'legacy-systems']
-        }
-      ];
-
-      // Generate embeddings for all transcripts
-      for (const transcript of transcripts) {
-        await this.addDocument(transcript);
+      // Check if index exists, create if not
+      const indexes = await this.pinecone.listIndexes();
+      const indexExists = indexes.some(index => index.name === this.indexName);
+      
+      if (!indexExists) {
+        logger.info(`Creating Pinecone index: ${this.indexName}`);
+        await this.pinecone.createIndex({
+          name: this.indexName,
+          dimension: 1536, // OpenAI text-embedding-ada-002 dimension
+          metric: 'cosine',
+          spec: {
+            serverless: {
+              cloud: 'aws',
+              region: 'us-east-1'
+            }
+          }
+        });
+        
+        // Wait for index to be ready
+        await this.waitForIndexReady();
       }
-
-      logger.info(`Vector store initialized with ${transcripts.length} transcripts`);
-
+      
+      this.index = this.pinecone.index(this.indexName);
+      logger.info(`Pinecone index initialized: ${this.indexName}`);
+      
     } catch (error) {
-      logger.error('Vector store initialization failed:', error);
+      logger.error('Failed to initialize Pinecone index:', error);
+      throw error;
     }
   }
 
-  // Generate embeddings for text
+  /**
+   * Wait for index to be ready
+   */
+  async waitForIndexReady() {
+    let attempts = 0;
+    const maxAttempts = 30;
+    
+    while (attempts < maxAttempts) {
+      try {
+        const description = await this.pinecone.describeIndex(this.indexName);
+        if (description.status.ready) {
+          logger.info('Pinecone index is ready');
+          return;
+        }
+        
+        logger.info(`Waiting for index to be ready... (${attempts + 1}/${maxAttempts})`);
+        await new Promise(resolve => setTimeout(resolve, 10000)); // Wait 10 seconds
+        attempts++;
+        
+      } catch (error) {
+        logger.error('Error checking index status:', error);
+        attempts++;
+      }
+    }
+    
+    throw new Error('Index failed to become ready within timeout');
+  }
+
+  /**
+   * Generate embeddings for text
+   */
   async generateEmbeddings(text) {
     try {
       const response = await this.openai.embeddings.create({
         model: 'text-embedding-ada-002',
         input: text,
       });
-
+      
       return response.data[0].embedding;
-
     } catch (error) {
-      logger.error('Embedding generation failed:', error);
+      logger.error('Failed to generate embeddings:', error);
       throw error;
     }
   }
 
-  // Add document to vector store
-  async addDocument(document) {
+  /**
+   * Add document to vector store
+   */
+  async addDocument(id, content, metadata = {}) {
     try {
-      // Generate embeddings for the document content
-      const embeddings = await this.generateEmbeddings(document.content);
-      
-      // Store document with embeddings
-      this.vectorStore.set(document.id, {
-        ...document,
-        embeddings,
-        timestamp: new Date().toISOString()
-      });
-
-      logger.info(`Document added to vector store: ${document.title}`);
-
-    } catch (error) {
-      logger.error(`Failed to add document ${document.id}:`, error);
-      throw error;
-    }
-  }
-
-  // Calculate cosine similarity between two vectors
-  calculateSimilarity(vectorA, vectorB) {
-    const dotProduct = vectorA.reduce((sum, a, i) => sum + a * vectorB[i], 0);
-    const magnitudeA = Math.sqrt(vectorA.reduce((sum, a) => sum + a * a, 0));
-    const magnitudeB = Math.sqrt(vectorB.reduce((sum, b) => sum + b * b, 0));
-    
-    return dotProduct / (magnitudeA * magnitudeB);
-  }
-
-  // Search for relevant documents
-  async searchDocuments(query, limit = 5) {
-    try {
-      // Generate embeddings for the query
-      const queryEmbeddings = await this.generateEmbeddings(query);
-      
-      // Calculate similarities with all documents
-      const similarities = [];
-      
-      for (const [id, document] of this.vectorStore.entries()) {
-        const similarity = this.calculateSimilarity(queryEmbeddings, document.embeddings);
-        similarities.push({
-          id,
-          document,
-          similarity
-        });
+      if (!this.index) {
+        await this.initializeIndex();
       }
       
-      // Sort by similarity and return top results
-      similarities.sort((a, b) => b.similarity - a.similarity);
+      // Generate embeddings
+      const embedding = await this.generateEmbeddings(content);
       
-      return similarities.slice(0, limit).map(item => ({
-        id: item.id,
-        title: item.document.title,
-        content: item.document.content,
-        tags: item.document.tags,
-        similarity: item.similarity
-      }));
-
+      // Prepare vector for Pinecone
+      const vector = {
+        id: id,
+        values: embedding,
+        metadata: {
+          content: content.substring(0, 1000), // Store truncated content
+          fullContent: content,
+          ...metadata,
+          timestamp: new Date().toISOString()
+        }
+      };
+      
+      // Upsert to Pinecone
+      await this.index.namespace(this.namespace).upsert([vector]);
+      
+      logger.info(`Document added to vector store: ${id}`);
+      return { success: true, id };
+      
     } catch (error) {
-      logger.error('Document search failed:', error);
-      return [];
+      logger.error('Failed to add document to vector store:', error);
+      throw error;
     }
   }
 
-  // Generate RAG response with context
-  async generateRAGResponse(query, conversationHistory = []) {
+  /**
+   * Search for similar documents
+   */
+  async searchDocuments(query, topK = 5, filter = {}) {
+    try {
+      if (!this.index) {
+        await this.initializeIndex();
+      }
+      
+      // Generate query embeddings
+      const queryEmbedding = await this.generateEmbeddings(query);
+      
+      // Search in Pinecone
+      const searchResponse = await this.index.namespace(this.namespace).query({
+        vector: queryEmbedding,
+        topK: topK,
+        includeMetadata: true,
+        filter: Object.keys(filter).length > 0 ? filter : undefined
+      });
+      
+      // Format results
+      const results = searchResponse.matches.map(match => ({
+        id: match.id,
+        score: match.score,
+        content: match.metadata.fullContent || match.metadata.content,
+        metadata: match.metadata
+      }));
+      
+      logger.info(`Search completed, found ${results.length} results`);
+      return results;
+      
+    } catch (error) {
+      logger.error('Failed to search documents:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Initialize vector store with transcript data
+   */
+  async initializeVectorStore() {
+    try {
+      logger.info('Initializing vector store with transcript data...');
+      
+      const transcripts = [
+        {
+          id: 'ai-agent-orchestration',
+          content: `AI Agent Orchestration Research:
+          Multi-agent systems require sophisticated orchestration patterns for optimal performance. 
+          Key patterns include Master-Slave, Peer-to-Peer, and Hierarchical architectures.
+          Master-Slave pattern provides centralized control while allowing distributed execution.
+          Peer-to-Peer enables equal collaboration between agents.
+          Hierarchical structures support complex decision-making processes.
+          Error handling and recovery mechanisms are crucial for production deployments.
+          Load balancing ensures optimal resource utilization across agent networks.
+          Communication protocols must be standardized for interoperability.
+          Security considerations include authentication, authorization, and data encryption.
+          Monitoring and observability are essential for system health.
+          Performance optimization requires careful tuning of agent interactions.`,
+          metadata: {
+            type: 'research',
+            category: 'ai-orchestration',
+            expertise: 'multi-agent systems, distributed computing'
+          }
+        },
+        {
+          id: 'custom-mcp-server',
+          content: `Custom MCP Server Development:
+          Model Context Protocol enables AI models to interact with external tools and data sources.
+          RESTful API design principles are fundamental for MCP server implementation.
+          Authentication mechanisms must be robust and secure.
+          Error handling should be comprehensive with proper HTTP status codes.
+          Rate limiting prevents abuse and ensures fair resource allocation.
+          Documentation is critical for developer adoption and integration.
+          Testing strategies include unit tests, integration tests, and load testing.
+          Deployment considerations include containerization and cloud infrastructure.
+          Monitoring and logging provide insights into server performance.
+          Versioning strategies ensure backward compatibility.
+          Security best practices include input validation and output sanitization.`,
+          metadata: {
+            type: 'development',
+            category: 'mcp-protocol',
+            expertise: 'API development, server architecture'
+          }
+        },
+        {
+          id: 'ai-saas-building',
+          content: `AI SaaS Building Methodologies:
+          Multi-tenancy architecture is essential for scalable SaaS platforms.
+          API-first design enables integration with various client applications.
+          Event-driven architecture supports real-time features and scalability.
+          Database design must support tenant isolation and data security.
+          User management includes authentication, authorization, and role-based access.
+          Billing and subscription management are critical for business operations.
+          Analytics and reporting provide insights into platform usage.
+          Security measures include data encryption, access controls, and audit trails.
+          Performance optimization requires caching, CDN, and database optimization.
+          Customer support tools enable efficient issue resolution.
+          Compliance with regulations like GDPR and SOC 2 is mandatory.`,
+          metadata: {
+            type: 'business',
+            category: 'saas-development',
+            expertise: 'SaaS architecture, business operations'
+          }
+        },
+        {
+          id: 'enterprise-ai-integration',
+          content: `Enterprise AI Integration Strategies:
+          Legacy system integration requires careful planning and execution.
+          Data governance frameworks ensure data quality and compliance.
+          Zero-trust architecture provides comprehensive security.
+          Pilot programs validate AI solutions before full deployment.
+          Change management processes support organizational adoption.
+          Training programs ensure user competency and adoption.
+          Performance monitoring tracks system health and optimization opportunities.
+          Scalability planning supports business growth and expansion.
+          Risk management identifies and mitigates potential issues.
+          ROI measurement demonstrates business value and justification.
+          Vendor management ensures reliable partnerships and support.`,
+          metadata: {
+            type: 'enterprise',
+            category: 'ai-integration',
+            expertise: 'enterprise architecture, change management'
+          }
+        }
+      ];
+      
+      // Add all transcripts to vector store
+      for (const transcript of transcripts) {
+        await this.addDocument(transcript.id, transcript.content, transcript.metadata);
+      }
+      
+      logger.info('Vector store initialization completed');
+      return { success: true, documentsAdded: transcripts.length };
+      
+    } catch (error) {
+      logger.error('Failed to initialize vector store:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Generate RAG response with context
+   */
+  async generateRAGResponse(query, conversationHistory = [], topK = 5) {
     try {
       // Search for relevant documents
-      const relevantDocs = await this.searchDocuments(query, 3);
+      const relevantDocs = await this.searchDocuments(query, topK);
       
       // Build context from relevant documents
-      const context = relevantDocs.map(doc => 
-        `Document: ${doc.title}\nContent: ${doc.content}\nRelevance: ${(doc.similarity * 100).toFixed(1)}%`
-      ).join('\n\n');
+      const context = relevantDocs.map(doc => doc.content).join('\n\n');
+      
+      // Build conversation history
+      const historyText = conversationHistory
+        .map(msg => `${msg.role}: ${msg.content}`)
+        .join('\n');
       
       // Create system prompt with context
-      const systemPrompt = `You are an expert AI consultant with deep knowledge in AI technologies, multi-agent systems, MCP protocols, SaaS development, and enterprise integration.
+      const systemPrompt = `You are an expert AI assistant with access to comprehensive research and knowledge about AI technologies, multi-agent systems, MCP protocols, SaaS development, and enterprise integration.
 
-Based on the following relevant documents and conversation history, provide a comprehensive and accurate response:
-
-RELEVANT DOCUMENTS:
+Context from knowledge base:
 ${context}
 
-CONVERSATION HISTORY:
-${conversationHistory.map(msg => `${msg.role}: ${msg.content}`).join('\n')}
+Previous conversation:
+${historyText}
 
-When responding:
-1. Use information from the relevant documents when applicable
-2. Maintain consistency with previous conversation context
-3. Provide practical, actionable advice
-4. Reference specific insights from the documents
-5. Adapt recommendations to the user's specific needs
-
-Current query: ${query}`;
+Based on the context and conversation history, provide a detailed, accurate, and helpful response. When appropriate, reference specific information from the context and provide actionable recommendations.`;
 
       // Generate response using OpenAI
-      const response = await this.openai.chat.completions.create({
+      const completion = await this.openai.chat.completions.create({
         model: 'gpt-4',
         messages: [
-          {
-            role: 'system',
-            content: systemPrompt
-          },
-          {
-            role: 'user',
-            content: query
-          }
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: query }
         ],
         max_tokens: 1000,
         temperature: 0.7
       });
-
+      
+      const response = completion.choices[0].message.content;
+      
       return {
-        success: true,
-        response: response.choices[0].message.content,
+        response,
         context: relevantDocs,
-        usage: response.usage
+        sources: relevantDocs.map(doc => ({
+          id: doc.id,
+          score: doc.score,
+          metadata: doc.metadata
+        }))
       };
-
+      
     } catch (error) {
-      logger.error('RAG response generation failed:', error);
-      return {
-        success: false,
-        error: error.message
-      };
+      logger.error('Failed to generate RAG response:', error);
+      throw error;
     }
   }
 
-  // Get document by ID
-  getDocument(id) {
-    const document = this.vectorStore.get(id);
-    if (document) {
-      return {
-        id: document.id,
-        title: document.title,
-        content: document.content,
-        tags: document.tags,
-        timestamp: document.timestamp
-      };
-    }
-    return null;
-  }
-
-  // Get all documents
-  getAllDocuments() {
-    return Array.from(this.vectorStore.values()).map(doc => ({
-      id: doc.id,
-      title: doc.title,
-      tags: doc.tags,
-      timestamp: doc.timestamp
-    }));
-  }
-
-  // Update document
-  async updateDocument(id, updates) {
+  /**
+   * Delete document from vector store
+   */
+  async deleteDocument(id) {
     try {
-      const existingDoc = this.vectorStore.get(id);
-      if (!existingDoc) {
-        throw new Error(`Document not found: ${id}`);
+      if (!this.index) {
+        await this.initializeIndex();
       }
-
-      const updatedDoc = { ...existingDoc, ...updates };
       
-      // Regenerate embeddings if content changed
-      if (updates.content) {
-        updatedDoc.embeddings = await this.generateEmbeddings(updates.content);
-      }
-
-      this.vectorStore.set(id, updatedDoc);
-      
-      logger.info(`Document updated: ${id}`);
+      await this.index.namespace(this.namespace).deleteOne(id);
+      logger.info(`Document deleted from vector store: ${id}`);
       return { success: true };
-
+      
     } catch (error) {
-      logger.error(`Failed to update document ${id}:`, error);
-      return { success: false, error: error.message };
+      logger.error('Failed to delete document:', error);
+      throw error;
     }
   }
 
-  // Delete document
-  deleteDocument(id) {
-    const deleted = this.vectorStore.delete(id);
-    if (deleted) {
-      logger.info(`Document deleted: ${id}`);
+  /**
+   * Get vector store statistics
+   */
+  async getStats() {
+    try {
+      if (!this.index) {
+        await this.initializeIndex();
+      }
+      
+      const stats = await this.index.describeIndexStats({
+        filter: {
+          namespace: this.namespace
+        }
+      });
+      
+      return {
+        totalVectors: stats.totalVectorCount,
+        dimension: stats.dimension,
+        namespaces: stats.namespaces
+      };
+      
+    } catch (error) {
+      logger.error('Failed to get vector store stats:', error);
+      throw error;
     }
-    return { success: deleted };
   }
 
-  // Get vector store statistics
-  getStats() {
-    return {
-      totalDocuments: this.vectorStore.size,
-      documents: this.getAllDocuments()
-    };
+  /**
+   * Update document in vector store
+   */
+  async updateDocument(id, content, metadata = {}) {
+    try {
+      // Delete existing document
+      await this.deleteDocument(id);
+      
+      // Add updated document
+      return await this.addDocument(id, content, metadata);
+      
+    } catch (error) {
+      logger.error('Failed to update document:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Search documents by metadata filter
+   */
+  async searchByMetadata(filter, topK = 10) {
+    try {
+      if (!this.index) {
+        await this.initializeIndex();
+      }
+      
+      // Search with metadata filter
+      const searchResponse = await this.index.namespace(this.namespace).query({
+        vector: new Array(1536).fill(0), // Zero vector for metadata-only search
+        topK: topK,
+        includeMetadata: true,
+        filter: filter
+      });
+      
+      return searchResponse.matches.map(match => ({
+        id: match.id,
+        score: match.score,
+        content: match.metadata.fullContent || match.metadata.content,
+        metadata: match.metadata
+      }));
+      
+    } catch (error) {
+      logger.error('Failed to search by metadata:', error);
+      throw error;
+    }
   }
 }
 
-module.exports = new RAGService();
+module.exports = RAGService;

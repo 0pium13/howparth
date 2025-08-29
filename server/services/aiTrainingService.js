@@ -1,5 +1,7 @@
 const OpenAI = require('openai');
-const { logger } = require('../utils/logger');
+const fs = require('fs').promises;
+const path = require('path');
+const logger = require('../utils/logger');
 
 class AITrainingService {
   constructor() {
@@ -7,304 +9,340 @@ class AITrainingService {
       apiKey: process.env.OPENAI_API_KEY,
     });
     
-    // Training data from transcripts
+    // Training data from uploaded transcripts
     this.trainingData = {
       aiAgentOrchestration: {
-        title: "AI-Agent-Orchestration",
-        content: `
-# AI Agent Orchestration Research Insights
-
-## Multi-Agent Systems Architecture
-- **Agent Coordination**: Implementing hierarchical agent structures for complex task decomposition
-- **Communication Protocols**: Establishing standardized message passing between agents
-- **Task Distribution**: Dynamic load balancing and resource allocation across agent networks
-- **Conflict Resolution**: Mechanisms for handling agent conflicts and decision arbitration
-
-## Orchestration Patterns
-- **Master-Slave Pattern**: Centralized control with distributed execution
-- **Peer-to-Peer Pattern**: Decentralized agent collaboration
-- **Pipeline Pattern**: Sequential processing with agent handoffs
-- **Broadcast Pattern**: One-to-many communication for coordination
-
-## Technical Implementation
-- **Message Queues**: Redis/RabbitMQ for reliable agent communication
-- **State Management**: Distributed state synchronization
-- **Error Handling**: Graceful degradation and agent recovery
-- **Monitoring**: Real-time agent performance and health tracking
-
-## Best Practices
-- **Agent Isolation**: Ensuring agents don't interfere with each other
-- **Scalability**: Horizontal scaling of agent instances
-- **Security**: Agent authentication and authorization
-- **Observability**: Comprehensive logging and metrics collection
-        `,
-        expertise: "Multi-agent orchestration, distributed systems, agent communication protocols"
+        content: `AI Agent Orchestration Research:
+        Multi-agent systems require sophisticated orchestration patterns for optimal performance. 
+        Key patterns include Master-Slave, Peer-to-Peer, and Hierarchical architectures.
+        Master-Slave pattern provides centralized control while allowing distributed execution.
+        Peer-to-Peer enables equal collaboration between agents.
+        Hierarchical structures support complex decision-making processes.
+        Error handling and recovery mechanisms are crucial for production deployments.
+        Load balancing ensures optimal resource utilization across agent networks.
+        Communication protocols must be standardized for interoperability.
+        Security considerations include authentication, authorization, and data encryption.
+        Monitoring and observability are essential for system health.
+        Performance optimization requires careful tuning of agent interactions.`,
+        expertise: 'AI agent orchestration, multi-agent systems, distributed computing, system architecture'
       },
-      
       customMCP: {
-        title: "Custom-MCP-Server",
-        content: `
-# Custom MCP Server Development
-
-## MCP (Model Context Protocol) Architecture
-- **Protocol Design**: Implementing custom MCP servers for specialized AI workflows
-- **Tool Integration**: Connecting AI models with external tools and APIs
-- **Context Management**: Maintaining conversation context across tool interactions
-- **Error Handling**: Robust error recovery and fallback mechanisms
-
-## Server Implementation
-- **RESTful APIs**: Building scalable API endpoints for tool interactions
-- **Authentication**: Secure access control and API key management
-- **Rate Limiting**: Preventing abuse and ensuring fair resource usage
-- **Caching**: Optimizing performance with intelligent caching strategies
-
-## Tool Development
-- **Custom Tools**: Creating specialized tools for specific domains
-- **API Wrappers**: Building interfaces to external services
-- **Data Processing**: Implementing data transformation and validation
-- **Integration Testing**: Comprehensive testing of tool interactions
-
-## Deployment & Scaling
-- **Containerization**: Docker deployment for consistent environments
-- **Load Balancing**: Distributing requests across multiple server instances
-- **Monitoring**: Real-time performance and health monitoring
-- **Backup & Recovery**: Data protection and disaster recovery procedures
-        `,
-        expertise: "MCP protocol, API development, tool integration, server architecture"
+        content: `Custom MCP Server Development:
+        Model Context Protocol enables AI models to interact with external tools and data sources.
+        RESTful API design principles are fundamental for MCP server implementation.
+        Authentication mechanisms must be robust and secure.
+        Error handling should be comprehensive with proper HTTP status codes.
+        Rate limiting prevents abuse and ensures fair resource allocation.
+        Documentation is critical for developer adoption and integration.
+        Testing strategies include unit tests, integration tests, and load testing.
+        Deployment considerations include containerization and cloud infrastructure.
+        Monitoring and logging provide insights into server performance.
+        Versioning strategies ensure backward compatibility.
+        Security best practices include input validation and output sanitization.`,
+        expertise: 'MCP protocol, API development, server architecture, security, testing'
       },
-      
       aiSaaS: {
-        title: "AI-SaaS-Building",
-        content: `
-# AI SaaS Platform Development
-
-## SaaS Architecture Patterns
-- **Multi-tenancy**: Isolated customer environments with shared infrastructure
-- **Microservices**: Modular service architecture for scalability
-- **API-First Design**: RESTful APIs for all platform interactions
-- **Event-Driven Architecture**: Asynchronous processing for better performance
-
-## AI Integration Strategies
-- **Model Serving**: Efficient AI model deployment and inference
-- **Pipeline Orchestration**: Coordinating complex AI workflows
-- **Data Management**: Secure data storage and processing
-- **Model Versioning**: Managing multiple model versions and deployments
-
-## Business Model Implementation
-- **Subscription Management**: Flexible pricing tiers and billing
-- **Usage Tracking**: Monitoring customer usage and resource consumption
-- **Feature Flags**: Gradual feature rollout and A/B testing
-- **Analytics**: Customer behavior and platform performance insights
-
-## Security & Compliance
-- **Data Encryption**: End-to-end encryption for sensitive data
-- **Access Control**: Role-based permissions and authentication
-- **Audit Logging**: Comprehensive activity tracking for compliance
-- **GDPR Compliance**: Data privacy and user rights management
-        `,
-        expertise: "SaaS architecture, AI platform development, business models, security"
+        content: `AI SaaS Building Methodologies:
+        Multi-tenancy architecture is essential for scalable SaaS platforms.
+        API-first design enables integration with various client applications.
+        Event-driven architecture supports real-time features and scalability.
+        Database design must support tenant isolation and data security.
+        User management includes authentication, authorization, and role-based access.
+        Billing and subscription management are critical for business operations.
+        Analytics and reporting provide insights into platform usage.
+        Security measures include data encryption, access controls, and audit trails.
+        Performance optimization requires caching, CDN, and database optimization.
+        Customer support tools enable efficient issue resolution.
+        Compliance with regulations like GDPR and SOC 2 is mandatory.`,
+        expertise: 'SaaS development, multi-tenancy, API design, business operations, compliance'
       },
-      
       enterpriseAI: {
-        title: "Enterprise-AI-Integration",
-        content: `
-# Enterprise AI Integration Strategies
-
-## Enterprise Architecture
-- **Legacy System Integration**: Connecting AI with existing enterprise systems
-- **Data Governance**: Establishing data quality and governance frameworks
-- **Scalability Planning**: Designing for enterprise-scale deployments
-- **Change Management**: Managing organizational adoption of AI solutions
-
-## Integration Patterns
-- **API Gateway**: Centralized API management and security
-- **Event Streaming**: Real-time data processing with Kafka/Pulsar
-- **Data Lakes**: Centralized data storage and analytics
-- **Service Mesh**: Microservices communication and observability
-
-## Security & Compliance
-- **Zero Trust Architecture**: Comprehensive security framework
-- **Data Classification**: Sensitive data identification and protection
-- **Compliance Frameworks**: SOC2, ISO27001, HIPAA compliance
-- **Vendor Management**: Third-party AI service risk assessment
-
-## Implementation Strategy
-- **Pilot Programs**: Starting with small-scale proof of concepts
-- **Phased Rollout**: Gradual deployment across organization
-- **Training Programs**: Employee education and skill development
-- **Success Metrics**: Defining and tracking ROI and success indicators
-        `,
-        expertise: "Enterprise architecture, system integration, security, change management"
+        content: `Enterprise AI Integration Strategies:
+        Legacy system integration requires careful planning and execution.
+        Data governance frameworks ensure data quality and compliance.
+        Zero-trust architecture provides comprehensive security.
+        Pilot programs validate AI solutions before full deployment.
+        Change management processes support organizational adoption.
+        Training programs ensure user competency and adoption.
+        Performance monitoring tracks system health and optimization opportunities.
+        Scalability planning supports business growth and expansion.
+        Risk management identifies and mitigates potential issues.
+        ROI measurement demonstrates business value and justification.
+        Vendor management ensures reliable partnerships and support.`,
+        expertise: 'Enterprise integration, data governance, security, change management, ROI'
       }
     };
+
+    this.fineTunedModels = new Map();
+    this.trainingJobs = new Map();
   }
 
-  // Train GPT-4 on specific transcript content
-  async trainOnTranscript(transcriptType, customContent = null) {
-    try {
-      const trainingData = customContent || this.trainingData[transcriptType];
-      
-      if (!trainingData) {
-        throw new Error(`Unknown transcript type: ${transcriptType}`);
-      }
-
-      // Create a comprehensive training prompt
-      const trainingPrompt = this.buildTrainingPrompt(trainingData);
-
-      // Fine-tune the model with the training data
-      const fineTuneResult = await this.createFineTune(trainingPrompt);
-
-      logger.info(`Training completed for ${transcriptType}:`, fineTuneResult);
-
-      return {
-        success: true,
-        modelId: fineTuneResult.modelId,
-        transcriptType,
-        trainingData: trainingData.title
-      };
-
-    } catch (error) {
-      logger.error(`Training failed for ${transcriptType}:`, error);
-      return {
-        success: false,
-        error: error.message
-      };
+  /**
+   * Preprocess training data for fine-tuning
+   */
+  async preprocessTrainingData(transcriptType) {
+    const data = this.trainingData[transcriptType];
+    if (!data) {
+      throw new Error(`Training data not found for type: ${transcriptType}`);
     }
+
+    // Create training examples in the format required by OpenAI
+    const trainingExamples = this.createTrainingExamples(data.content, data.expertise);
+    
+    // Save to temporary file
+    const filename = `training_data_${transcriptType}_${Date.now()}.jsonl`;
+    const filepath = path.join(__dirname, '../temp', filename);
+    
+    await fs.mkdir(path.dirname(filepath), { recursive: true });
+    await fs.writeFile(filepath, trainingExamples.join('\n'));
+    
+    return filepath;
   }
 
-  // Build comprehensive training prompt
-  buildTrainingPrompt(trainingData) {
-    return `You are an expert AI consultant with deep knowledge in ${trainingData.expertise}.
-
-Based on the following research and insights, provide expert guidance:
-
-${trainingData.content}
-
-When responding to queries related to this domain:
-1. Draw from the specific insights and patterns outlined above
-2. Provide practical, actionable advice
-3. Reference real-world implementation examples
-4. Consider scalability, security, and best practices
-5. Adapt recommendations to the user's specific context and requirements
-
-Your responses should reflect the depth of knowledge and expertise demonstrated in this research.`;
+  /**
+   * Create training examples from content
+   */
+  createTrainingExamples(content, expertise) {
+    const examples = [];
+    
+    // Split content into chunks and create Q&A pairs
+    const chunks = content.split('\n').filter(line => line.trim().length > 0);
+    
+    for (let i = 0; i < chunks.length; i += 2) {
+      if (i + 1 < chunks.length) {
+        const question = this.generateQuestion(chunks[i], expertise);
+        const answer = chunks[i + 1];
+        
+        examples.push(JSON.stringify({
+          messages: [
+            { role: "system", content: `You are an expert in ${expertise}. Provide detailed, accurate, and helpful responses.` },
+            { role: "user", content: question },
+            { role: "assistant", content: answer }
+          ]
+        }));
+      }
+    }
+    
+    return examples;
   }
 
-  // Create fine-tuned model
-  async createFineTune(trainingPrompt) {
+  /**
+   * Generate questions from content chunks
+   */
+  generateQuestion(content, expertise) {
+    const questions = [
+      `Can you explain ${content.toLowerCase()}?`,
+      `What are the best practices for ${content.toLowerCase()}?`,
+      `How should I implement ${content.toLowerCase()}?`,
+      `What considerations are important for ${content.toLowerCase()}?`,
+      `Can you provide guidance on ${content.toLowerCase()}?`
+    ];
+    
+    return questions[Math.floor(Math.random() * questions.length)];
+  }
+
+  /**
+   * Create fine-tuning job
+   */
+  async createFineTune(transcriptType, modelName = 'gpt-3.5-turbo') {
     try {
-      // For demonstration, we'll simulate fine-tuning
-      // In production, you would use OpenAI's fine-tuning API
+      logger.info(`Starting fine-tuning for ${transcriptType}`);
       
-      const modelId = `ft-${Date.now()}`;
+      // Preprocess training data
+      const trainingFile = await this.preprocessTrainingData(transcriptType);
       
-      // Store the training prompt for future use
-      await this.storeTrainingData(modelId, trainingPrompt);
-
+      // Upload training file
+      const file = await this.openai.files.create({
+        file: fs.createReadStream(trainingFile),
+        purpose: 'fine-tune'
+      });
+      
+      logger.info(`Training file uploaded: ${file.id}`);
+      
+      // Create fine-tuning job
+      const fineTune = await this.openai.fineTuning.jobs.create({
+        training_file: file.id,
+        model: modelName,
+        hyperparameters: {
+          n_epochs: 3,
+          batch_size: 1,
+          learning_rate_multiplier: 0.1
+        }
+      });
+      
+      logger.info(`Fine-tuning job created: ${fineTune.id}`);
+      
+      // Store job information
+      this.trainingJobs.set(fineTune.id, {
+        transcriptType,
+        status: fineTune.status,
+        createdAt: new Date(),
+        modelName
+      });
+      
+      // Clean up temporary file
+      await fs.unlink(trainingFile);
+      
       return {
-        modelId,
-        status: 'completed',
-        trainingPrompt
+        jobId: fineTune.id,
+        status: fineTune.status,
+        transcriptType,
+        modelName
       };
-
+      
     } catch (error) {
       logger.error('Fine-tuning creation failed:', error);
       throw error;
     }
   }
 
-  // Store training data for future use
-  async storeTrainingData(modelId, trainingPrompt) {
-    // In production, store in database or vector store
-    logger.info(`Stored training data for model: ${modelId}`);
-  }
-
-  // Generate response using trained model
-  async generateResponse(query, modelId = null, context = null) {
+  /**
+   * Check fine-tuning job status
+   */
+  async checkFineTuneStatus(jobId) {
     try {
-      let systemPrompt = "You are an expert AI consultant with deep knowledge in AI technologies, multi-agent systems, MCP protocols, SaaS development, and enterprise integration.";
-
-      // If specific model is requested, use its training data
-      if (modelId) {
-        const trainingData = await this.getTrainingData(modelId);
-        if (trainingData) {
-          systemPrompt = trainingData;
+      const fineTune = await this.openai.fineTuning.jobs.retrieve(jobId);
+      
+      // Update stored job information
+      if (this.trainingJobs.has(jobId)) {
+        const jobInfo = this.trainingJobs.get(jobId);
+        jobInfo.status = fineTune.status;
+        jobInfo.updatedAt = new Date();
+        
+        if (fineTune.status === 'succeeded' && fineTune.fine_tuned_model) {
+          jobInfo.fineTunedModel = fineTune.fine_tuned_model;
+          this.fineTunedModels.set(jobInfo.transcriptType, fineTune.fine_tuned_model);
         }
       }
+      
+      return {
+        jobId,
+        status: fineTune.status,
+        fineTunedModel: fineTune.fine_tuned_model,
+        createdAt: fineTune.created_at,
+        finishedAt: fineTune.finished_at,
+        trainingFile: fineTune.training_file,
+        resultFiles: fineTune.result_files
+      };
+      
+    } catch (error) {
+      logger.error('Failed to check fine-tuning status:', error);
+      throw error;
+    }
+  }
 
-      // Add context if provided
-      if (context) {
-        systemPrompt += `\n\nContext: ${context}`;
+  /**
+   * Generate response using fine-tuned model
+   */
+  async generateResponse(prompt, transcriptType, useFineTuned = true) {
+    try {
+      let model = 'gpt-3.5-turbo';
+      
+      if (useFineTuned && this.fineTunedModels.has(transcriptType)) {
+        model = this.fineTunedModels.get(transcriptType);
       }
-
-      const response = await this.openai.chat.completions.create({
-        model: 'gpt-4',
+      
+      const data = this.trainingData[transcriptType];
+      const systemPrompt = this.buildSystemPrompt(data?.expertise || 'AI and technology');
+      
+      const completion = await this.openai.chat.completions.create({
+        model,
         messages: [
-          {
-            role: 'system',
-            content: systemPrompt
-          },
-          {
-            role: 'user',
-            content: query
-          }
+          { role: "system", content: systemPrompt },
+          { role: "user", content: prompt }
         ],
         max_tokens: 1000,
         temperature: 0.7
       });
-
-      return {
-        success: true,
-        response: response.choices[0].message.content,
-        modelId: modelId || 'gpt-4'
-      };
-
+      
+      return completion.choices[0].message.content;
+      
     } catch (error) {
       logger.error('Response generation failed:', error);
-      return {
-        success: false,
-        error: error.message
-      };
+      throw error;
     }
   }
 
-  // Get training data for specific model
-  async getTrainingData(modelId) {
-    // In production, retrieve from database
-    return null;
+  /**
+   * Build system prompt for fine-tuned model
+   */
+  buildSystemPrompt(expertise) {
+    return `You are an expert AI assistant specializing in ${expertise}. 
+    You have been trained on comprehensive research and real-world implementation data.
+    Provide detailed, accurate, and actionable responses based on your expertise.
+    Always consider practical implementation details and best practices.
+    When appropriate, include code examples, architectural recommendations, and security considerations.
+    Your responses should be professional, informative, and tailored to the user's specific needs.`;
   }
 
-  // Train on all transcripts
-  async trainOnAllTranscripts() {
-    const results = {};
-    
-    for (const [key, data] of Object.entries(this.trainingData)) {
-      results[key] = await this.trainOnTranscript(key);
-    }
-
-    return results;
-  }
-
-  // Get available training data
+  /**
+   * Get available transcript types
+   */
   getAvailableTranscripts() {
-    return Object.keys(this.trainingData).map(key => ({
-      id: key,
-      title: this.trainingData[key].title,
-      expertise: this.trainingData[key].expertise
+    return Object.keys(this.trainingData);
+  }
+
+  /**
+   * Add custom training data
+   */
+  async addCustomTrainingData(type, content, expertise) {
+    this.trainingData[type] = { content, expertise };
+    logger.info(`Added custom training data for type: ${type}`);
+  }
+
+  /**
+   * Get training job status
+   */
+  getTrainingJobStatus(jobId) {
+    return this.trainingJobs.get(jobId);
+  }
+
+  /**
+   * Get all training jobs
+   */
+  getAllTrainingJobs() {
+    return Array.from(this.trainingJobs.entries()).map(([jobId, jobInfo]) => ({
+      jobId,
+      ...jobInfo
     }));
   }
 
-  // Add custom training data
-  async addCustomTrainingData(id, title, content, expertise) {
-    this.trainingData[id] = {
-      title,
-      content,
-      expertise
-    };
+  /**
+   * Get fine-tuned models
+   */
+  getFineTunedModels() {
+    return Array.from(this.fineTunedModels.entries()).map(([type, model]) => ({
+      transcriptType: type,
+      modelId: model
+    }));
+  }
 
-    logger.info(`Added custom training data: ${title}`);
-    return { success: true, id };
+  /**
+   * Cancel fine-tuning job
+   */
+  async cancelFineTune(jobId) {
+    try {
+      const fineTune = await this.openai.fineTuning.jobs.cancel(jobId);
+      logger.info(`Fine-tuning job cancelled: ${jobId}`);
+      return fineTune;
+    } catch (error) {
+      logger.error('Failed to cancel fine-tuning job:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * List all fine-tuning jobs
+   */
+  async listFineTuningJobs(limit = 10) {
+    try {
+      const jobs = await this.openai.fineTuning.jobs.list({ limit });
+      return jobs.data;
+    } catch (error) {
+      logger.error('Failed to list fine-tuning jobs:', error);
+      throw error;
+    }
   }
 }
 
-module.exports = new AITrainingService();
+module.exports = AITrainingService;
