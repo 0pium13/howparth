@@ -1,126 +1,135 @@
 import React, { useState, useEffect } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
-import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Search } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Menu, X, Search, User, Settings, CreditCard, LogOut, ChevronDown } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { ProfileDropdown } from './ProfileDropdown';
 
 const Header: React.FC = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const location = useLocation();
-  const { scrollY } = useScroll();
-  const { isAuthenticated } = useAuth();
-  
-  const headerOpacity = useTransform(scrollY, [0, 100], [0, 0.95]);
-  const headerBlur = useTransform(scrollY, [0, 100], [0, 10]);
+  const navigate = useNavigate();
+  const { user, isAuthenticated, logout } = useAuth();
 
+  // Close mobile menu when route changes
   useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  const navItems = [
-    { name: 'AI CONTENT', path: '/ai-content' },
-    { name: 'AUTOMATION', path: '/automation' },
-    { name: 'SUPPORT', path: '/support' },
-  ]; // Updated navigation items
+    setIsMobileMenuOpen(false);
+  }, [location.pathname]);
 
   const isActive = (path: string) => {
-    if (path === '/' && location.pathname === '/') return true;
-    if (path !== '/' && location.pathname.startsWith(path)) return true;
-    return false;
+    return location.pathname === path || location.pathname.startsWith(path + '/');
   };
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/');
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
+  };
+
+  // Updated navigation with 4 main items
+  const navItems = [
+    { name: 'AI', path: '/ai', subItems: [
+      { name: 'Blogs', path: '/ai/blogs' },
+      { name: 'Strategy', path: '/ai/strategy' },
+      { name: 'Quality', path: '/ai/quality' }
+    ]},
+    { name: 'Support', path: '/support' },
+    { name: 'Chat', path: '/chat' }
+  ];
+
+  const profileMenuItems = [
+    { name: 'Settings', icon: Settings, path: '/profile/settings' },
+    { name: 'Billing', icon: CreditCard, path: '/profile/billing' },
+    { name: 'Logout', icon: LogOut, action: handleLogout }
+  ];
 
   return (
     <motion.header
-      style={{
-        opacity: headerOpacity,
-        backdropFilter: `blur(${headerBlur}px)`,
-      }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled ? 'bg-primary/95 border-b border-border' : 'bg-transparent'
-      }`}
+      initial={{ y: -100, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.8, ease: "easeOut" }}
+      className="fixed top-0 left-0 right-0 z-50 bg-black/95 backdrop-blur-xl border-b border-gray-800/50"
     >
-      <div className="max-w-8xl mx-auto px-4 md:px-8 py-4 md:py-6">
-        <div className="flex items-center justify-between">
-          {/* Logo - Centered on mobile, left on desktop */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
+          
+          {/* Logo */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5 }}
-            className="flex-shrink-0 lg:flex-shrink-0 lg:order-1 order-2 lg:order-none"
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="flex-shrink-0"
           >
-            <Link to="/" className="text-xl md:text-2xl font-black tracking-wider hover:text-gray-300 transition-colors duration-300">
+            <Link
+              to="/"
+              className="text-2xl font-black text-white tracking-wider hover:text-gray-300 transition-colors duration-300"
+            >
               HOWPARTH
             </Link>
           </motion.div>
 
-          {/* Search Icon - Only visible on mobile */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="lg:hidden order-3"
-          >
-            <button className="p-2 text-secondary hover:text-gray-300 transition-colors duration-300">
-              <Search size={20} />
-            </button>
-          </motion.div>
-
           {/* Desktop Navigation */}
-          <motion.nav
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="hidden lg:flex items-center space-x-8 xl:space-x-12"
-          >
+          <nav className="hidden lg:flex items-center space-x-8">
             {navItems.map((item, index) => (
               <motion.div
                 key={item.name}
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: 0.3 + index * 0.1 }}
+                className="relative group"
               >
-                <Link
-                  to={item.path}
-                  className={`relative text-sm font-medium tracking-wider hover:text-gray-300 transition-colors duration-300 ${
-                    isActive(item.path) ? 'text-secondary' : 'text-gray-400'
-                  }`}
-                >
-                  {item.name}
-                  {isActive(item.path) && (
-                    <motion.div
-                      layoutId="activeTab"
-                      className="absolute -bottom-1 left-0 right-0 h-0.5 bg-secondary"
-                      initial={false}
-                      transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                    />
-                  )}
-                </Link>
-              </motion.div>
-            ))}
-            
-            {/* Login/Signup Links - Only show when not authenticated */}
-            {!isAuthenticated && (
-              <>
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3, delay: 0.7 }}
-                >
+                {item.subItems ? (
+                  // Dropdown menu for AI section
+                  <div className="relative">
+                    <button
+                      className={`flex items-center space-x-1 text-sm font-medium tracking-wider transition-colors duration-300 ${
+                        isActive(item.path) ? 'text-secondary' : 'text-gray-400 hover:text-gray-300'
+                      }`}
+                    >
+                      <span>{item.name}</span>
+                      <ChevronDown className="w-4 h-4 transition-transform duration-200 group-hover:rotate-180" />
+                    </button>
+                    
+                    {/* Dropdown Menu */}
+                    <AnimatePresence>
+                      <motion.div
+                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                        transition={{ duration: 0.2 }}
+                        className="absolute top-full left-0 mt-2 w-48 bg-gray-900/95 backdrop-blur-xl border border-gray-700/50 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200"
+                      >
+                        <div className="py-2">
+                          {item.subItems.map((subItem) => (
+                            <Link
+                              key={subItem.name}
+                              to={subItem.path}
+                              className={`block px-4 py-2 text-sm transition-colors duration-200 ${
+                                isActive(subItem.path)
+                                  ? 'text-secondary bg-gray-800/50'
+                                  : 'text-gray-300 hover:text-white hover:bg-gray-800/30'
+                              }`}
+                            >
+                              {subItem.name}
+                            </Link>
+                          ))}
+                        </div>
+                      </motion.div>
+                    </AnimatePresence>
+                  </div>
+                ) : (
+                  // Regular navigation item
                   <Link
-                    to="/login"
-                    className={`relative text-sm font-medium tracking-wider hover:text-gray-300 transition-colors duration-300 ${
-                      isActive('/login') ? 'text-secondary' : 'text-gray-400'
+                    to={item.path}
+                    className={`relative text-sm font-medium tracking-wider transition-colors duration-300 ${
+                      isActive(item.path) ? 'text-secondary' : 'text-gray-400 hover:text-gray-300'
                     }`}
                   >
-                    LOGIN
-                    {isActive('/login') && (
+                    {item.name}
+                    {isActive(item.path) && (
                       <motion.div
                         layoutId="activeTab"
                         className="absolute -bottom-1 left-0 right-0 h-0.5 bg-secondary"
@@ -128,6 +137,100 @@ const Header: React.FC = () => {
                         transition={{ type: "spring", stiffness: 300, damping: 30 }}
                       />
                     )}
+                  </Link>
+                )}
+              </motion.div>
+            ))}
+          </nav>
+
+          {/* Right side - Profile/Auth */}
+          <div className="flex items-center space-x-4">
+            
+            {/* Search Icon - Mobile Only */}
+            <button className="lg:hidden p-2 text-gray-400 hover:text-gray-300 transition-colors duration-300">
+              <Search className="w-5 h-5" />
+            </button>
+
+            {/* Profile Section */}
+            {isAuthenticated ? (
+              <div className="relative">
+                <button
+                  onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
+                  className="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-800/50 transition-colors duration-300"
+                >
+                  <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-blue-600 rounded-full flex items-center justify-center">
+                    {user?.avatar ? (
+                      <img 
+                        src={user.avatar} 
+                        alt={user.username}
+                        className="w-full h-full rounded-full object-cover"
+                      />
+                    ) : (
+                      <User className="w-4 h-4 text-white" />
+                    )}
+                  </div>
+                  <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${
+                    isProfileDropdownOpen ? 'rotate-180' : ''
+                  }`} />
+                </button>
+
+                {/* Profile Dropdown */}
+                <AnimatePresence>
+                  {isProfileDropdownOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                      transition={{ duration: 0.2 }}
+                      className="absolute right-0 mt-2 w-56 bg-gray-900/95 backdrop-blur-xl border border-gray-700/50 rounded-lg shadow-xl"
+                    >
+                      <div className="py-2">
+                        {/* User Info */}
+                        <div className="px-4 py-3 border-b border-gray-700/50">
+                          <p className="text-sm font-medium text-white">{user?.username}</p>
+                          <p className="text-xs text-gray-400">{user?.email}</p>
+                        </div>
+
+                        {/* Menu Items */}
+                        {profileMenuItems.map((menuItem) => (
+                          <div key={menuItem.name}>
+                            {menuItem.action ? (
+                              <button
+                                onClick={menuItem.action}
+                                className="w-full flex items-center space-x-3 px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-gray-800/30 transition-colors duration-200"
+                              >
+                                <menuItem.icon className="w-4 h-4" />
+                                <span>{menuItem.name}</span>
+                              </button>
+                            ) : (
+                              <Link
+                                to={menuItem.path}
+                                className="flex items-center space-x-3 px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-gray-800/30 transition-colors duration-200"
+                              >
+                                <menuItem.icon className="w-4 h-4" />
+                                <span>{menuItem.name}</span>
+                              </Link>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            ) : (
+              // Auth buttons for non-authenticated users
+              <div className="flex items-center space-x-4">
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: 0.7 }}
+                >
+                  <Link
+                    to="/login"
+                    className="text-sm font-medium tracking-wider text-gray-400 hover:text-gray-300 transition-colors duration-300"
+                  >
+                    LOGIN
                   </Link>
                 </motion.div>
                 
@@ -138,150 +241,79 @@ const Header: React.FC = () => {
                 >
                   <Link
                     to="/signup"
-                    className={`relative text-sm font-medium tracking-wider hover:text-gray-300 transition-colors duration-300 ${
-                      isActive('/signup') ? 'text-secondary' : 'text-gray-400'
-                    }`}
+                    className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white text-sm font-medium tracking-wider rounded-lg hover:from-purple-700 hover:to-blue-700 transform hover:scale-105 transition-all duration-300"
                   >
                     SIGN UP
-                    {isActive('/signup') && (
-                      <motion.div
-                        layoutId="activeTab"
-                        className="absolute -bottom-1 left-0 right-0 h-0.5 bg-secondary"
-                        initial={false}
-                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                      />
-                    )}
                   </Link>
                 </motion.div>
-              </>
+              </div>
             )}
-          </motion.nav>
 
-          {/* CTA Button or Profile Dropdown */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-            className="hidden lg:block"
-          >
-            {isAuthenticated ? (
-              <ProfileDropdown />
-            ) : (
-              <Link
-                to="/contact"
-                className="bg-black text-white px-6 py-3 rounded-md font-semibold uppercase tracking-wider hover:bg-gray-800 transition-colors duration-300"
-              >
-                START PROJECT
-              </Link>
-            )}
-          </motion.div>
-
-                      {/* Mobile Menu Button or Profile */}
-            {isAuthenticated ? (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.3 }}
-                className="lg:hidden order-1"
-              >
-                <ProfileDropdown isMobile />
-              </motion.div>
-            ) : (
-              <motion.button
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.3 }}
-                className="lg:hidden p-2 text-secondary hover:text-gray-300 transition-colors duration-300 order-1"
-                onClick={() => setIsOpen(!isOpen)}
-                aria-label="Toggle menu"
-              >
-                {isOpen ? <X size={24} /> : <Menu size={24} />}
-              </motion.button>
-            )}
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="lg:hidden p-2 text-gray-400 hover:text-gray-300 transition-colors duration-300"
+            >
+              {isMobileMenuOpen ? (
+                <X className="w-6 h-6" />
+              ) : (
+                <Menu className="w-6 h-6" />
+              )}
+            </button>
+          </div>
         </div>
 
         {/* Mobile Navigation */}
-        <motion.div
-          initial={{ opacity: 0, height: 0 }}
-          animate={{
-            opacity: isOpen ? 1 : 0,
-            height: isOpen ? 'auto' : 0,
-          }}
-          transition={{ duration: 0.3 }}
-          className="lg:hidden overflow-hidden"
-        >
-          <div className="py-4 md:py-6 space-y-3 md:space-y-4 border-t border-border mt-4 md:mt-6">
-            {navItems.map((item, index) => (
-              <motion.div
-                key={item.name}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: isOpen ? 1 : 0, x: isOpen ? 0 : -20 }}
-                transition={{ duration: 0.3, delay: index * 0.1 }}
-              >
-                <Link
-                  to={item.path}
-                  className={`block text-lg font-medium tracking-wider hover:text-gray-300 transition-colors duration-300 ${
-                    isActive(item.path) ? 'text-secondary' : 'text-gray-400'
-                  }`}
-                  onClick={() => setIsOpen(false)}
-                >
-                  {item.name}
-                </Link>
-              </motion.div>
-            ))}
-            
-            {/* Mobile Login/Signup Links */}
-            {!isAuthenticated && (
-              <>
-                <motion.div
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: isOpen ? 1 : 0, x: isOpen ? 0 : -20 }}
-                  transition={{ duration: 0.3, delay: 0.4 }}
-                >
-                  <Link
-                    to="/login"
-                    className={`block text-lg font-medium tracking-wider hover:text-gray-300 transition-colors duration-300 ${
-                      isActive('/login') ? 'text-secondary' : 'text-gray-400'
-                    }`}
-                    onClick={() => setIsOpen(false)}
-                  >
-                    LOGIN
-                  </Link>
-                </motion.div>
-                <motion.div
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: isOpen ? 1 : 0, x: isOpen ? 0 : -20 }}
-                  transition={{ duration: 0.3, delay: 0.5 }}
-                >
-                  <Link
-                    to="/signup"
-                    className={`block text-lg font-medium tracking-wider hover:text-gray-300 transition-colors duration-300 ${
-                      isActive('/signup') ? 'text-secondary' : 'text-gray-400'
-                    }`}
-                    onClick={() => setIsOpen(false)}
-                  >
-                    SIGN UP
-                  </Link>
-                </motion.div>
-              </>
-            )}
-            
+        <AnimatePresence>
+          {isMobileMenuOpen && (
             <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: isOpen ? 1 : 0, x: isOpen ? 0 : -20 }}
-              transition={{ duration: 0.3, delay: 0.5 }}
-              className="pt-4"
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3 }}
+              className="lg:hidden border-t border-gray-800/50"
             >
-              <Link
-                to="/contact"
-                className="bg-black text-white px-6 py-3 rounded-md font-semibold uppercase tracking-wider hover:bg-gray-800 transition-colors duration-300 block text-center"
-                onClick={() => setIsOpen(false)}
-              >
-                START PROJECT
-              </Link>
+              <div className="py-4 space-y-2">
+                {navItems.map((item) => (
+                  <div key={item.name}>
+                    {item.subItems ? (
+                      // Mobile dropdown for AI section
+                      <div className="space-y-2">
+                        <div className="px-4 py-2 text-sm font-medium text-gray-400">
+                          {item.name}
+                        </div>
+                        {item.subItems.map((subItem) => (
+                          <Link
+                            key={subItem.name}
+                            to={subItem.path}
+                            className={`block px-8 py-2 text-sm transition-colors duration-200 ${
+                              isActive(subItem.path)
+                                ? 'text-secondary bg-gray-800/30'
+                                : 'text-gray-300 hover:text-white hover:bg-gray-800/20'
+                            }`}
+                          >
+                            {subItem.name}
+                          </Link>
+                        ))}
+                      </div>
+                    ) : (
+                      <Link
+                        to={item.path}
+                        className={`block px-4 py-2 text-sm transition-colors duration-200 ${
+                          isActive(item.path)
+                            ? 'text-secondary bg-gray-800/30'
+                            : 'text-gray-300 hover:text-white hover:bg-gray-800/20'
+                        }`}
+                      >
+                        {item.name}
+                      </Link>
+                    )}
+                  </div>
+                ))}
+              </div>
             </motion.div>
-          </div>
-        </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </motion.header>
   );

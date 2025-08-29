@@ -11,9 +11,8 @@ import HomepageNav from './components/HomepageNav';
 import Contact from './pages/Contact';
 import LoginPage from './pages/LoginPage';
 import SignUpPage from './pages/SignUpPage';
-import AIContentPage from './pages/AIContentPage';
-import AutomationPage from './pages/AutomationPage';
-import SupportPage from './pages/SupportPage';
+import AIPortal from './pages/AIPortal';
+import ChatPage from './pages/ChatPage';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ToastManager, useToast } from './components/Toast';
 import { WelcomeToast } from './components/WelcomeToast';
@@ -68,6 +67,68 @@ function AppContent() {
                   </>
                 </ErrorBoundary>
               } />
+              
+              {/* AI Portal Routes */}
+              <Route path="/ai" element={
+                <ErrorBoundary>
+                  <AIPortal />
+                </ErrorBoundary>
+              } />
+              <Route path="/ai/blogs" element={
+                <ErrorBoundary>
+                  <AIPortal />
+                </ErrorBoundary>
+              } />
+              <Route path="/ai/strategy" element={
+                <ErrorBoundary>
+                  <AIPortal />
+                </ErrorBoundary>
+              } />
+              <Route path="/ai/quality" element={
+                <ErrorBoundary>
+                  <AIPortal />
+                </ErrorBoundary>
+              } />
+              
+              {/* Support Route */}
+              <Route path="/support" element={
+                <ErrorBoundary>
+                  <Suspense fallback={<LoadingSpinner />}>
+                    <About />
+                  </Suspense>
+                </ErrorBoundary>
+              } />
+              
+              {/* Chat Route */}
+              <Route path="/chat" element={
+                <ErrorBoundary>
+                  <ChatPage />
+                </ErrorBoundary>
+              } />
+              
+              {/* Profile Routes */}
+              <Route path="/profile/settings" element={
+                <ErrorBoundary>
+                  <div className="min-h-screen bg-black text-white pt-20">
+                    <div className="max-w-4xl mx-auto px-4 py-12">
+                      <h1 className="text-4xl font-bold mb-8">Profile Settings</h1>
+                      <p className="text-gray-400">Profile settings page coming soon...</p>
+                    </div>
+                  </div>
+                </ErrorBoundary>
+              } />
+              <Route path="/profile/billing" element={
+                <ErrorBoundary>
+                  <div className="min-h-screen bg-black text-white pt-20">
+                    <div className="max-w-4xl mx-auto px-4 py-12">
+                      <h1 className="text-4xl font-bold mb-8">Billing</h1>
+                      <p className="text-gray-400">Billing page coming soon...</p>
+                    </div>
+                  </div>
+                </ErrorBoundary>
+              } />
+              
+              {/* Legacy Routes */}
               <Route path="/about" element={
                 <ErrorBoundary>
                   <Suspense fallback={<LoadingSpinner />}>
@@ -97,19 +158,16 @@ function AppContent() {
                   <SignUpPage />
                 </ErrorBoundary>
               } />
+              
+              {/* Legacy AI Content Routes - Redirect to new AI portal */}
               <Route path="/ai-content" element={
                 <ErrorBoundary>
-                  <AIContentPage />
+                  <AIPortal />
                 </ErrorBoundary>
               } />
               <Route path="/automation" element={
                 <ErrorBoundary>
-                  <AutomationPage />
-                </ErrorBoundary>
-              } />
-              <Route path="/support" element={
-                <ErrorBoundary>
-                  <SupportPage />
+                  <AIPortal />
                 </ErrorBoundary>
               } />
             </Routes>
