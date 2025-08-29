@@ -25,7 +25,7 @@ const RouteGuard: React.FC<RouteGuardProps> = ({
 
   // Check if specific role is required
   if (requireRole && user) {
-    const userRole = user.role || 'public';
+    const userRole = user.role || 'USER';
     const roleHierarchy = {
       'admin': 4,
       'pro': 3,
@@ -34,8 +34,15 @@ const RouteGuard: React.FC<RouteGuardProps> = ({
       'public': 0
     };
 
+    // Map server roles to hierarchy levels
+    const roleMapping = {
+      'ADMIN': 4,
+      'MODERATOR': 3,
+      'USER': 1
+    };
+
     const requiredLevel = roleHierarchy[requireRole];
-    const userLevel = roleHierarchy[userRole as keyof typeof roleHierarchy] || 0;
+    const userLevel = roleMapping[userRole as keyof typeof roleMapping] || 0;
 
     if (userLevel < requiredLevel) {
       return <Navigate to="/upgrade" state={{ from: location }} replace />;

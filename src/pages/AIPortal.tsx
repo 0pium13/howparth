@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Brain, FileText, Target, Zap, Send, Download, Mic, MicOff, Users, Share2, Volume2, VolumeX } from 'lucide-react';
+import { Brain, FileText, Target, Zap, Download, Mic, MicOff, Users, Volume2, VolumeX } from 'lucide-react';
 
 // Type declarations for Speech Recognition API
 declare global {
@@ -80,7 +80,6 @@ const AIPortal: React.FC = () => {
   const [collaborators, setCollaborators] = useState<Collaborator[]>([]);
   const [voiceEnabled, setVoiceEnabled] = useState(false);
   
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const recognitionRef = useRef<SpeechRecognition | null>(null);
 
@@ -594,11 +593,8 @@ const AIPortal: React.FC = () => {
               className="fixed inset-0 pointer-events-none z-50"
             >
               {collaborators.map((collaborator) => (
-                <motion.div
+                <div
                   key={collaborator.id}
-                  initial={{ opacity: 0, scale: 0 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0 }}
                   style={{
                     position: 'absolute',
                     left: collaborator.cursor.x,
@@ -607,6 +603,12 @@ const AIPortal: React.FC = () => {
                   }}
                   className="flex items-center space-x-2"
                 >
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0 }}
+                    className="flex items-center space-x-2"
+                  >
                   <div className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
                     {collaborator.avatar}
                   </div>
@@ -616,7 +618,8 @@ const AIPortal: React.FC = () => {
                       <span className="ml-2 text-purple-400">typing...</span>
                     )}
                   </div>
-                </motion.div>
+                  </motion.div>
+                </div>
               ))}
             </motion.div>
           )}
