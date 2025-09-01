@@ -1,27 +1,23 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Bot, User, Search, FileText, Brain, Sparkles } from 'lucide-react';
+import { Send, Paperclip, Smile, Image, Mic } from 'lucide-react';
+import ChatHeader from '../components/ChatHeader';
+import ChatBubble from '../components/ChatBubble';
+import TypingIndicator from '../components/TypingIndicator';
 
 interface Message {
   id: string;
-  role: 'user' | 'assistant';
   content: string;
-  timestamp: Date;
-  context?: any[];
+  role: 'user' | 'assistant';
+  timestamp: string;
+  seen?: boolean;
 }
 
 const ChatPage: React.FC = () => {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      role: 'assistant',
-      content: "Hello! I'm your AI assistant, trained on comprehensive research about AI agent orchestration, MCP protocols, SaaS development, and enterprise integration. How can I help you today?",
-      timestamp: new Date()
-    }
-  ]);
-  const [inputMessage, setInputMessage] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [showContext, setShowContext] = useState(false);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [inputValue, setInputValue] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
+  const [lastSeen, setLastSeen] = useState('last seen 2m ago');
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -30,301 +26,232 @@ const ChatPage: React.FC = () => {
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [messages, isTyping]);
 
-  const handleSendMessage = async () => {
-    if (!inputMessage.trim() || isLoading) return;
+  const sendMessage = async () => {
+    if (!inputValue.trim() || isTyping) return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
+      content: inputValue.trim(),
       role: 'user',
-      content: inputMessage,
-      timestamp: new Date()
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      seen: false
     };
 
     setMessages(prev => [...prev, userMessage]);
-    setInputMessage('');
-    setIsLoading(true);
+    setInputValue('');
+    setIsTyping(true);
+    setLastSeen('Parth is typing...');
 
     try {
-      // Simulate API call to RAG service
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      const assistantMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: generateResponse(inputMessage),
-        timestamp: new Date(),
-        context: generateContext()
-      };
+      const response = await fetch('/api/chat/stream', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: userMessage.content,
+          userId: 'user-' + Date.now()
+        }),
+      });
 
-      setMessages(prev => [...prev, assistantMessage]);
+      if (!response.ok) {
+        throw new Error('Failed to send message');
+      }
+
+      const reader = response.body?.getReader();
+      if (!reader) throw new Error('No response body');
+
+      let assistantMessage = '';
+      const assistantMessageId = (Date.now() + 1).toString();
+
+      // Add initial assistant message
+      const initialAssistantMessage: Message = {
+        id: assistantMessageId,
+        content: '',
+        role: 'assistant',
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      };
+      setMessages(prev => [...prev, initialAssistantMessage]);
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const chunk = new TextDecoder().decode(value);
+        const lines = chunk.split('\n');
+
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            try {
+              const data = JSON.parse(line.slice(6));
+              if (data.content) {
+                const currentAssistantMessage = assistantMessage + data.content;
+                setMessages(prev => 
+                  prev.map(msg => 
+                    msg.id === assistantMessageId 
+                      ? { ...msg, content: currentAssistantMessage }
+                      : msg
+                  )
+                );
+                assistantMessage = currentAssistantMessage;
+              }
+            } catch (e) {
+              // Ignore parsing errors
+            }
+          }
+        }
+      }
+
+      // Mark user message as seen
+      setMessages(prev => 
+        prev.map(msg => 
+          msg.role === 'user' && !msg.seen 
+            ? { ...msg, seen: true }
+            : msg
+        )
+      );
+
     } catch (error) {
       console.error('Error sending message:', error);
+      // Add error message
+      const errorMessage: Message = {
+        id: (Date.now() + 2).toString(),
+        content: 'Sorry, I encountered an error. Please try again.',
+        role: 'assistant',
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      };
+      setMessages(prev => [...prev, errorMessage]);
     } finally {
-      setIsLoading(false);
+      setIsTyping(false);
+      setLastSeen('last seen just now');
     }
   };
 
-  const generateResponse = (query: string): string => {
-    const responses = [
-      "Based on the research on AI agent orchestration, I'd recommend implementing a Master-Slave pattern for your use case. This provides centralized control while allowing distributed execution across your agent network.",
-      "For MCP server development, you'll want to focus on RESTful API design and secure authentication. The research shows that proper tool integration and error handling are crucial for production deployments.",
-      "When building AI SaaS platforms, consider multi-tenancy architecture from the start. The research emphasizes the importance of API-first design and event-driven architecture for scalability.",
-      "Enterprise AI integration requires careful planning around legacy system connectivity and data governance. I'd suggest starting with a pilot program and implementing zero-trust architecture for security."
-    ];
-    
-    return responses[Math.floor(Math.random() * responses.length)];
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
   };
 
-  const generateContext = () => {
-    return [
-      {
-        title: 'AI Agent Orchestration',
-        relevance: '95%',
-        excerpt: 'Multi-agent systems require sophisticated orchestration patterns...'
-      },
-      {
-        title: 'MCP Protocol Development',
-        relevance: '87%',
-        excerpt: 'Model Context Protocol enables AI models to interact with external tools...'
-      }
-    ];
+  const addEmoji = (emoji: string) => {
+    setInputValue(prev => prev + emoji);
+    setShowEmojiPicker(false);
   };
 
-  const quickPrompts = [
-    "How do I implement multi-agent orchestration?",
-    "What are the best practices for MCP server development?",
-    "How should I structure my AI SaaS platform?",
-    "What security considerations are important for enterprise AI?"
-  ];
+  const commonEmojis = ['😊', '😂', '❤️', '👍', '🎉', '🔥', '💯', '✨', '🤔', '👏', '🙏', '😎', '🚀', '💪', '🎯', '⭐'];
 
   return (
-    <div className="min-h-screen bg-black text-white pt-20">
-      <div className="max-w-6xl mx-auto px-4 h-screen flex flex-col">
-        {/* Header */}
-        <div className="flex items-center justify-between py-6 border-b border-gray-800">
-          <div className="flex items-center space-x-4">
-            <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-blue-600 rounded-xl flex items-center justify-center">
-              <Brain className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold">AI Research Chat</h1>
-              <p className="text-gray-400 text-sm">Powered by RAG with transcript context</p>
+    <div className="flex flex-col h-screen bg-[var(--bg-primary)] pt-16">
+      <ChatHeader 
+        isTyping={isTyping}
+        lastSeen={lastSeen}
+        messages={messages}
+        profilePhoto="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImdyYWRpZW50IiB4MT0iMCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIxMDAlIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3R5bGU9InN0b3AtY29sb3I6IzdjM2FlZDtzdG9wLW9wYWNpdHk6MSIgLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojOGI1Y2Y2O3N0b3Atb3BhY2l0eToxIiAvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICA8L2RlZnM+CiAgPGNpcmNsZSBjeD0iMTAwIiBjeT0iMTAwIiByPSIxMDAiIGZpbGw9InVybCgjZ3JhZGllbnQpIi8+CiAgPGNpcmNsZSBjeD0iMTAwIiBjeT0iODAiIHI9IjM1IiBmaWxsPSJ3aGl0ZSIvPgogIDxwYXRoIGQ9Ik0xMDAgMTIwIEMgNjAgMTIwLCA0MCAxNjAsIDQwIDIwMCBMIDE2MCAyMDAgQyAxNjAgMTYwLCAxNDAgMTIwLCAxMDAgMTIwIFoiIGZpbGw9IndoaXRlIi8+CiAgPGNpcmNsZSBjeD0iOTAiIGN5PSI3NSIgcj0iNCIgZmlsbD0iIzdjM2FlZCIvPgogIDxjaXJjbGUgY3g9IjExMCIgY3k9Ijc1IiByPSI0IiBmaWxsPSIjN2MzYWVkIi8+CiAgPHBhdGggZD0iTSA4NSA5MCBRIDEwMCAxMDAsIDExNSA5MCIgc3Ryb2tlPSIjN2MzYWVkIiBzdHJva2Utd2lkdGg9IjIiIGZpbGw9Im5vbmUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogIDxwYXRoIGQ9Ik0gNjUgNTAgUSAxMDAgMzAsIDEzNSA1MCBRIDEzMCA3MCwgMTAwIDYwIFEgNzAgNzAsIDY1IDUwIFoiIGZpbGw9IiMxZjI5MzciLz4KICA8ZWxsaXBzZSBjeD0iOTAiIGN5PSI3NSIgcng9IjEyIiByeT0iOCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjN2MzYWVkIiBzdHJva2Utd2lkdGg9IjIiLz4KICA8ZWxsaXBzZSBjeD0iMTEwIiBjeT0iNzUiIHJ4PSIxMiIgcnk9IjgiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzdjM2FlZCIgc3Ryb2tlLXdpZHRoPSIyIi8+CiAgPGxpbmUgeDE9IjEwMiIgeTE9Ijc1IiB4Mj0iOTgiIHkyPSI3NSIgc3Ryb2tlPSIjN2MzYWVkIiBzdHJva2Utd2lkdGg9IjIiLz4KICA8Y2lyY2xlIGN4PSIzMCIgY3k9IjMwIiByPSI4IiBmaWxsPSIjMTBiOTgxIiBvcGFjaXR5PSIwLjgiLz4KICA8Y2lyY2xlIGN4PSIxNzAiIGN5PSIzMCIgcj0iOCIgZmlsbD0iI2Y1OWUwYiIgb3BhY2l0eT0iMC44Ii8+CiAgPGNpcmNsZSBjeD0iMzAiIGN5PSIxNzAiIHI9IjgiIGZpbGw9IiNlZjQ0NDQiIG9wYWNpdHk9IjAuOCIvPgogIDxjaXJjbGUgY3g9IjE3MCIgY3k9IjE3MCIgcj0iOCIgZmlsbD0iIzNiODJmNiIgb3BhY2l0eT0iMC44Ii8+Cjwvc3ZnPgo="
+      />
+      
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0">
+        {messages.map((message) => (
+          <ChatBubble
+            key={message.id}
+            content={message.content}
+            role={message.role}
+            seen={message.seen}
+            timestamp={message.timestamp}
+            profilePhoto="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImdyYWRpZW50IiB4MT0iMCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIxMDAlIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3R5bGU9InN0b3AtY29sb3I6IzdjM2FlZDtzdG9wLW9wYWNpdHk6MSIgLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxMDAlIiBzdHlsZT0ic3RvcC1jb2xvcjojOGI1Y2Y2O3N0b3Atb3BhY2l0eToxIiAvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICA8L2RlZnM+CiAgPGNpcmNsZSBjeD0iMTAwIiBjeT0iMTAwIiByPSIxMDAiIGZpbGw9InVybCgjZ3JhZGllbnQpIi8+CiAgPGNpcmNsZSBjeD0iMTAwIiBjeT0iODAiIHI9IjM1IiBmaWxsPSJ3aGl0ZSIvPgogIDxwYXRoIGQ9Ik0xMDAgMTIwIEMgNjAgMTIwLCA0MCAxNjAsIDQwIDIwMCBMIDE2MCAyMDAgQyAxNjAgMTYwLCAxNDAgMTIwLCAxMDAgMTIwIFoiIGZpbGw9IndoaXRlIi8+CiAgPGNpcmNsZSBjeD0iOTAiIGN5PSI3NSIgcj0iNCIgZmlsbD0iIzdjM2FlZCIvPgogIDxjaXJjbGUgY3g9IjExMCIgY3k9Ijc1IiByPSI0IiBmaWxsPSIjN2MzYWVkIi8+CiAgPHBhdGggZD0iTSA4NSA5MCBRIDEwMCAxMDAsIDExNSA5MCIgc3Ryb2tlPSIjN2MzYWVkIiBzdHJva2Utd2lkdGg9IjIiIGZpbGw9Im5vbmUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgogIDxwYXRoIGQ9Ik0gNjUgNTAgUSAxMDAgMzAsIDEzNSA1MCBRIDEzMCA3MCwgMTAwIDYwIFEgNzAgNzAsIDY1IDUwIFoiIGZpbGw9IiMxZjI5MzciLz4KICA8ZWxsaXBzZSBjeD0iOTAiIGN5PSI3NSIgcng9IjEyIiByeT0iOCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjN2MzYWVkIiBzdHJva2Utd2lkdGg9IjIiLz4KICA8ZWxsaXBzZSBjeD0iMTEwIiBjeT0iNzUiIHJ4PSIxMiIgcnk9IjgiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzdjM2FlZCIgc3Ryb2tlLXdpZHRoPSIyIi8+CiAgPGxpbmUgeDE9IjEwMiIgeTE9Ijc1IiB4Mj0iOTgiIHkyPSI3NSIgc3Ryb2tlPSIjN2MzYWVkIiBzdHJva2Utd2lkdGg9IjIiLz4KICA8Y2lyY2xlIGN4PSIzMCIgY3k9IjMwIiByPSI4IiBmaWxsPSIjMTBiOTgxIiBvcGFjaXR5PSIwLjgiLz4KICA8Y2lyY2xlIGN4PSIxNzAiIGN5PSIzMCIgcj0iOCIgZmlsbD0iI2Y1OWUwYiIgb3BhY2l0eT0iMC44Ii8+CiAgPGNpcmNsZSBjeD0iMzAiIGN5PSIxNzAiIHI9IjgiIGZpbGw9IiNlZjQ0NDQiIG9wYWNpdHk9IjAuOCIvPgogIDxjaXJjbGUgY3g9IjE3MCIgY3k9IjE3MCIgcj0iOCIgZmlsbD0iIzNiODJmNiIgb3BhY2l0eT0iMC44Ii8+Cjwvc3ZnPgo="
+          />
+        ))}
+        
+        {isTyping && (
+          <div className="flex justify-start">
+            <TypingIndicator />
+          </div>
+        )}
+        
+        <div ref={messagesEndRef} />
+      </div>
+
+      <div className="p-4 bg-[var(--bg-secondary)] border-t border-[var(--border-color)] glass">
+        {/* Emoji Picker */}
+        {showEmojiPicker && (
+          <div className="mb-3 p-3 bg-[var(--bg-tertiary)] rounded-xl border border-[var(--border-color)]">
+            <div className="grid grid-cols-8 gap-2">
+              {commonEmojis.map((emoji, index) => (
+                <button
+                  key={index}
+                  onClick={() => addEmoji(emoji)}
+                  className="p-2 text-xl hover:bg-[var(--bg-primary)] rounded-lg transition-colors"
+                >
+                  {emoji}
+                </button>
+              ))}
             </div>
           </div>
+        )}
+        
+        <div className="flex items-end space-x-2">
+          {/* Attachment Button */}
+          <button 
+            className="p-2.5 rounded-full hover:bg-[var(--bg-tertiary)] transition-colors flex-shrink-0"
+            title="Attach file"
+          >
+            <Paperclip className="w-5 h-5 text-[var(--text-secondary)]" />
+          </button>
           
-          <div className="flex items-center space-x-4">
-            <button
-              onClick={() => setShowContext(!showContext)}
-              className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
-                showContext 
-                  ? 'bg-purple-600 text-white' 
-                  : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-              }`}
+          {/* Image Button */}
+          <button 
+            className="p-2.5 rounded-full hover:bg-[var(--bg-tertiary)] transition-colors flex-shrink-0"
+            title="Send image"
+          >
+            <Image className="w-5 h-5 text-[var(--text-secondary)]" />
+          </button>
+          
+          {/* Input Area */}
+          <div className="flex-1 relative">
+            <textarea
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              onKeyPress={handleKeyPress}
+              placeholder="Type a message..."
+              className="w-full p-3 pr-20 bg-[var(--bg-tertiary)] text-[var(--text-primary)] rounded-2xl resize-none border border-[var(--border-color)] focus:border-[var(--accent-primary)] focus:outline-none transition-colors"
+              rows={1}
+              style={{ minHeight: '44px', maxHeight: '120px' }}
+              disabled={isTyping}
+            />
+            
+            {/* Emoji Button */}
+            <button 
+              onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+              className="absolute right-2 bottom-2 p-1.5 rounded-full hover:bg-[var(--bg-primary)] transition-colors"
+              title="Add emoji"
             >
-              <Search className="w-4 h-4" />
-              <span className="text-sm">Context</span>
+              <Smile className="w-5 h-5 text-[var(--text-secondary)]" />
             </button>
           </div>
-        </div>
-
-        {/* Main Chat Area */}
-        <div className="flex-1 flex overflow-hidden">
-          {/* Chat Messages */}
-          <div className="flex-1 flex flex-col">
-            {/* Messages */}
-            <div className="flex-1 overflow-y-auto p-6 space-y-6">
-              <AnimatePresence>
-                {messages.map((message) => (
-                  <motion.div
-                    key={message.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                    className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
-                  >
-                    <div className={`flex items-start space-x-3 max-w-3xl ${
-                      message.role === 'user' ? 'flex-row-reverse space-x-reverse' : ''
-                    }`}>
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                        message.role === 'user' 
-                          ? 'bg-blue-600' 
-                          : 'bg-gradient-to-r from-purple-500 to-blue-600'
-                      }`}>
-                        {message.role === 'user' ? (
-                          <User className="w-4 h-4 text-white" />
-                        ) : (
-                          <Bot className="w-4 h-4 text-white" />
-                        )}
-                      </div>
-                      
-                      <div className={`rounded-2xl px-6 py-4 ${
-                        message.role === 'user'
-                          ? 'bg-blue-600 text-white'
-                          : 'bg-gray-800 text-gray-100'
-                      }`}>
-                        <p className="text-sm leading-relaxed">{message.content}</p>
-                        
-                        {/* Context Sources */}
-                        {message.context && message.context.length > 0 && (
-                          <div className="mt-4 pt-4 border-t border-gray-700">
-                            <p className="text-xs text-gray-400 mb-2">Sources:</p>
-                            <div className="space-y-2">
-                              {message.context.map((source, index) => (
-                                <div key={index} className="flex items-center space-x-2 text-xs">
-                                  <FileText className="w-3 h-3 text-purple-400" />
-                                  <span className="text-purple-400">{source.title}</span>
-                                  <span className="text-gray-500">({source.relevance})</span>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-                        
-                        <p className="text-xs text-gray-400 mt-2">
-                          {message.timestamp.toLocaleTimeString()}
-                        </p>
-                      </div>
-                    </div>
-                  </motion.div>
-                ))}
-              </AnimatePresence>
-
-              {/* Loading Indicator */}
-              {isLoading && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="flex justify-start"
-                >
-                  <div className="flex items-start space-x-3 max-w-3xl">
-                    <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-blue-600 rounded-full flex items-center justify-center">
-                      <Bot className="w-4 h-4 text-white" />
-                    </div>
-                    <div className="bg-gray-800 rounded-2xl px-6 py-4">
-                      <div className="flex items-center space-x-2">
-                        <div className="flex space-x-1">
-                          <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce"></div>
-                          <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                          <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                        </div>
-                        <span className="text-sm text-gray-400">AI is thinking...</span>
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-
-              <div ref={messagesEndRef} />
-            </div>
-
-            {/* Quick Prompts */}
-            <div className="p-6 border-t border-gray-800">
-              <div className="flex flex-wrap gap-2 mb-4">
-                {quickPrompts.map((prompt, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setInputMessage(prompt)}
-                    className="px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg text-sm text-gray-300 transition-colors"
-                  >
-                    {prompt}
-                  </button>
-                ))}
-              </div>
-
-              {/* Input Area */}
-              <div className="flex items-center space-x-4">
-                <div className="flex-1 relative">
-                  <input
-                    type="text"
-                    value={inputMessage}
-                    onChange={(e) => setInputMessage(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-                    placeholder="Ask about AI agent orchestration, MCP protocols, SaaS development, or enterprise integration..."
-                    className="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white placeholder-gray-400 focus:border-purple-500 focus:outline-none pr-12"
-                    disabled={isLoading}
-                  />
-                  <button
-                    onClick={handleSendMessage}
-                    disabled={!inputMessage.trim() || isLoading}
-                    className="absolute right-2 top-1/2 transform -translate-y-1/2 p-2 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-700 disabled:cursor-not-allowed rounded-lg transition-colors"
-                  >
-                    <Send className="w-4 h-4 text-white" />
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Context Panel */}
-          <AnimatePresence>
-            {showContext && (
-              <motion.div
-                initial={{ width: 0, opacity: 0 }}
-                animate={{ width: 320, opacity: 1 }}
-                exit={{ width: 0, opacity: 0 }}
-                className="border-l border-gray-800 bg-gray-900/50"
-              >
-                <div className="p-6">
-                  <h3 className="text-lg font-bold mb-4 flex items-center space-x-2">
-                    <Sparkles className="w-5 h-5 text-purple-400" />
-                    <span>Knowledge Base</span>
-                  </h3>
-                  
-                  <div className="space-y-4">
-                    <div className="bg-gray-800 rounded-lg p-4">
-                      <h4 className="font-semibold text-purple-400 mb-2">AI Agent Orchestration</h4>
-                      <p className="text-sm text-gray-400 mb-3">
-                        Multi-agent systems, communication protocols, orchestration patterns
-                      </p>
-                      <div className="flex flex-wrap gap-1">
-                        <span className="px-2 py-1 bg-purple-500/20 text-purple-400 text-xs rounded">Master-Slave</span>
-                        <span className="px-2 py-1 bg-blue-500/20 text-blue-400 text-xs rounded">Peer-to-Peer</span>
-                        <span className="px-2 py-1 bg-green-500/20 text-green-400 text-xs rounded">Pipeline</span>
-                      </div>
-                    </div>
-
-                    <div className="bg-gray-800 rounded-lg p-4">
-                      <h4 className="font-semibold text-blue-400 mb-2">MCP Server Development</h4>
-                      <p className="text-sm text-gray-400 mb-3">
-                        Model Context Protocol, tool integration, API development
-                      </p>
-                      <div className="flex flex-wrap gap-1">
-                        <span className="px-2 py-1 bg-blue-500/20 text-blue-400 text-xs rounded">RESTful APIs</span>
-                        <span className="px-2 py-1 bg-purple-500/20 text-purple-400 text-xs rounded">Authentication</span>
-                        <span className="px-2 py-1 bg-green-500/20 text-green-400 text-xs rounded">Tool Integration</span>
-                      </div>
-                    </div>
-
-                    <div className="bg-gray-800 rounded-lg p-4">
-                      <h4 className="font-semibold text-green-400 mb-2">AI SaaS Platform</h4>
-                      <p className="text-sm text-gray-400 mb-3">
-                        Multi-tenancy, microservices, business models, security
-                      </p>
-                      <div className="flex flex-wrap gap-1">
-                        <span className="px-2 py-1 bg-green-500/20 text-green-400 text-xs rounded">Multi-tenancy</span>
-                        <span className="px-2 py-1 bg-blue-500/20 text-blue-400 text-xs rounded">Microservices</span>
-                        <span className="px-2 py-1 bg-purple-500/20 text-purple-400 text-xs rounded">Security</span>
-                      </div>
-                    </div>
-
-                    <div className="bg-gray-800 rounded-lg p-4">
-                      <h4 className="font-semibold text-orange-400 mb-2">Enterprise Integration</h4>
-                      <p className="text-sm text-gray-400 mb-3">
-                        Legacy systems, data governance, compliance, change management
-                      </p>
-                      <div className="flex flex-wrap gap-1">
-                        <span className="px-2 py-1 bg-orange-500/20 text-orange-400 text-xs rounded">Legacy</span>
-                        <span className="px-2 py-1 bg-blue-500/20 text-blue-400 text-xs rounded">Governance</span>
-                        <span className="px-2 py-1 bg-green-500/20 text-green-400 text-xs rounded">Compliance</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+          
+          {/* Voice Message Button */}
+          <button 
+            className="p-2.5 rounded-full hover:bg-[var(--bg-tertiary)] transition-colors flex-shrink-0"
+            title="Voice message"
+          >
+            <Mic className="w-5 h-5 text-[var(--text-secondary)]" />
+          </button>
+          
+          {/* Send Button */}
+          <button
+            onClick={sendMessage}
+            disabled={!inputValue.trim() || isTyping}
+            className={`p-3 rounded-full transition-all flex-shrink-0 ${
+              inputValue.trim() && !isTyping
+                ? 'bg-[var(--accent-primary)] hover:bg-[var(--accent-secondary)] text-white shadow-lg'
+                : 'bg-[var(--bg-tertiary)] text-[var(--text-secondary)] cursor-not-allowed'
+            }`}
+            title="Send message"
+          >
+            <Send className="w-5 h-5" />
+          </button>
         </div>
       </div>
     </div>

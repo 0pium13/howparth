@@ -12,74 +12,88 @@ datasource db {
 
 // User Management
 model User {
-  id                String   @id @default(cuid())
-  email             String   @unique
-  username          String   @unique
-  password          String
-  firstName         String?
-  lastName          String?
-  avatar            String?
-  role              UserRole @default(USER)
-  subscriptionTier  SubscriptionTier @default(FREE)
-  isActive          Boolean  @default(true)
-  emailVerified     Boolean  @default(false)
-  lastLoginAt       DateTime?
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  id               String           @id @default(cuid())
+  email            String           @unique
+  username         String           @unique
+  password         String
+  firstName        String?
+  lastName         String?
+  avatar           String?
+  role             UserRole         @default(USER)
+  subscriptionTier SubscriptionTier @default(FREE)
+  isActive         Boolean          @default(true)
+  emailVerified    Boolean          @default(false)
+  lastLoginAt      DateTime?
+  
+  // Authentication & Security
+  refreshToken     String?          // Encrypted refresh token
+  resetToken       String?          // Password reset token
+  resetTokenExpires DateTime?       // Reset token expiration
+  mfaSecret        String?          // Encrypted MFA secret
+  mfaEnabled       Boolean          @default(false)
+  
+  // API Keys (encrypted)
+  openAIApiKey      String?          // Encrypted OpenAI API key
+  openAIApiKeyValid Boolean          @default(false)
+  openAIApiKeyLastValidated DateTime?
+  
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
 
   // Relations
-  blogPosts         BlogPost[]
-  conversations     Conversation[]
-  consultations     Consultation[]
-  analytics         UserAnalytics[]
-  preferences       UserPreferences?
-  notifications     Notification[]
+  blogPosts       BlogPost[]
+  conversations   Conversation[]
+  consultations   Consultation[]
+  analytics       UserAnalytics[]
+  preferences     UserPreferences?
+  notifications   Notification[]
+  recommendations Recommendation[]
 
   @@map("users")
 }
 
 // Blog Content System
 model BlogPost {
-  id                String   @id @default(cuid())
-  title             String
-  slug              String   @unique
-  content           String
-  excerpt           String?
-  featuredImage     String?
-  status            PostStatus @default(DRAFT)
-  publishedAt       DateTime?
-  scheduledAt       DateTime?
-  authorId          String
-  author            User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  
+  id            String     @id @default(cuid())
+  title         String
+  slug          String     @unique
+  content       String
+  excerpt       String?
+  featuredImage String?
+  status        PostStatus @default(DRAFT)
+  publishedAt   DateTime?
+  scheduledAt   DateTime?
+  authorId      String
+  author        User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
   // SEO and Metadata
-  metaTitle         String?
-  metaDescription   String?
-  keywords          String[]
-  seoScore          Int?
-  
+  metaTitle       String?
+  metaDescription String?
+  keywords        String[]
+  seoScore        Int?
+
   // Content Generation
-  aiGenerated       Boolean  @default(false)
-  promptUsed        String?
-  writingStyle      String?
-  targetAudience    String?
-  contentTone       String?
-  
+  aiGenerated    Boolean @default(false)
+  promptUsed     String?
+  writingStyle   String?
+  targetAudience String?
+  contentTone    String?
+
   // Analytics
-  views             Int      @default(0)
-  likes             Int      @default(0)
-  shares            Int      @default(0)
-  comments          Int      @default(0)
-  
+  views    Int @default(0)
+  likes    Int @default(0)
+  shares   Int @default(0)
+  comments Int @default(0)
+
   // Categories and Tags
-  categories        Category[]
-  tags              Tag[]
-  
+  categories Category[]
+  tags       Tag[]
+
   // Social Media
-  socialPosts       SocialPost[]
-  
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  socialPosts SocialPost[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("blog_posts")
 }
@@ -110,38 +124,38 @@ model Tag {
 
 // AI Chat System
 model Conversation {
-  id          String   @id @default(cuid())
-  userId      String?
-  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
-  sessionId   String   @unique
-  title       String?
-  status      ConversationStatus @default(ACTIVE)
-  messages    Message[]
-  metadata    Json?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        String             @id @default(cuid())
+  userId    String?
+  user      User?              @relation(fields: [userId], references: [id], onDelete: SetNull)
+  sessionId String             @unique
+  title     String?
+  status    ConversationStatus @default(ACTIVE)
+  messages  Message[]
+  metadata  Json?
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
 
   @@map("conversations")
 }
 
 model Message {
-  id             String   @id @default(cuid())
+  id             String       @id @default(cuid())
   conversationId String
   conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   role           MessageRole
   content        String
   attachments    String[]
   metadata       Json?
-  createdAt      DateTime @default(now())
+  createdAt      DateTime     @default(now())
 
   @@map("messages")
 }
 
 // AI Tools Knowledge Base
 model AITool {
-  id              String   @id @default(cuid())
-  name            String   @unique
-  slug            String   @unique
+  id              String           @id @default(cuid())
+  name            String           @unique
+  slug            String           @unique
   description     String
   category        String
   subcategory     String?
@@ -149,14 +163,14 @@ model AITool {
   pricing         Json?
   features        String[]
   useCases        String[]
-  difficulty      Difficulty @default(BEGINNER)
+  difficulty      Difficulty       @default(BEGINNER)
   learningCurve   String?
   setupGuide      String?
   integration     String[]
   alternatives    String[]
   recommendations Recommendation[]
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
 
   @@map("ai_tools")
 }
@@ -177,17 +191,17 @@ model Recommendation {
 
 // Consultation System
 model Consultation {
-  id          String   @id @default(cuid())
+  id          String             @id @default(cuid())
   userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        User               @relation(fields: [userId], references: [id], onDelete: Cascade)
   type        ConsultationType
   status      ConsultationStatus @default(PENDING)
   scheduledAt DateTime?
   duration    Int? // in minutes
   notes       String?
   outcome     String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
 
   @@map("consultations")
 }
@@ -205,59 +219,59 @@ model UserAnalytics {
 }
 
 model ContentAnalytics {
-  id          String   @id @default(cuid())
-  postId      String?
-  event       String
-  metadata    Json?
-  timestamp   DateTime @default(now())
+  id        String   @id @default(cuid())
+  postId    String?
+  event     String
+  metadata  Json?
+  timestamp DateTime @default(now())
 
   @@map("content_analytics")
 }
 
 // Social Media Integration
 model SocialPost {
-  id        String   @id @default(cuid())
-  postId    String
-  post      BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
-  platform  SocialPlatform
-  content   String
-  status    SocialPostStatus @default(DRAFT)
+  id          String           @id @default(cuid())
+  postId      String
+  post        BlogPost         @relation(fields: [postId], references: [id], onDelete: Cascade)
+  platform    SocialPlatform
+  content     String
+  status      SocialPostStatus @default(DRAFT)
   publishedAt DateTime?
-  analytics Json?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  analytics   Json?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
 
   @@map("social_posts")
 }
 
 // User Preferences and Settings
 model UserPreferences {
-  id                    String   @id @default(cuid())
-  userId                String   @unique
-  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  writingStyle          Json?
-  preferredTopics       String[]
-  notificationSettings  Json?
-  theme                 String   @default("dark")
-  language              String   @default("en")
-  timezone              String?
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
+  id                   String   @id @default(cuid())
+  userId               String   @unique
+  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  writingStyle         Json?
+  preferredTopics      String[]
+  notificationSettings Json?
+  theme                String   @default("dark")
+  language             String   @default("en")
+  timezone             String?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
 
   @@map("user_preferences")
 }
 
 // Notification System
 model Notification {
-  id        String   @id @default(cuid())
+  id        String           @id @default(cuid())
   userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   type      NotificationType
   title     String
   message   String
-  read      Boolean  @default(false)
+  read      Boolean          @default(false)
   metadata  Json?
-  createdAt DateTime @default(now())
+  createdAt DateTime         @default(now())
 
   @@map("notifications")
 }

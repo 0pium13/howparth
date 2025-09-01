@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
-import { Eye, EyeOff, CheckCircle, XCircle, Mail, Lock, ArrowRight } from 'lucide-react';
+import { Eye, EyeOff, CheckCircle, XCircle, Mail, Lock, ArrowRight, AlertCircle } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from './Toast';
 
@@ -24,29 +24,39 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [isValid, setIsValid] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
 
   // Real-time validation
-  useEffect(() => {
+  const validateForm = useCallback(() => {
     const newErrors: Record<string, string> = {};
 
     // Email validation
-    if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+    if (!formData.email.trim()) {
+      newErrors.email = 'Email is required';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       newErrors.email = 'Please enter a valid email address';
     }
 
     // Password validation
-    if (formData.password && formData.password.length < 6) {
+    if (!formData.password) {
+      newErrors.password = 'Password is required';
+    } else if (formData.password.length < 6) {
       newErrors.password = 'Password must be at least 6 characters';
     }
 
     setErrors(newErrors);
-    setIsValid(Boolean(formData.email && formData.password && Object.keys(newErrors).length === 0));
+    setIsValid(Boolean(formData.email.trim() && formData.password && Object.keys(newErrors).length === 0));
   }, [formData]);
+
+  useEffect(() => {
+    validateForm();
+  }, [formData, validateForm]);
 
   const handleInputChange = (field: string, value: string | boolean) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+    setApiError(null); // Clear API error when user starts typing
     
-    // Clear error when user starts typing
+    // Clear field error when user starts typing
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
     }
@@ -55,13 +65,14 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!isValid) return;
+    if (!isValid || isLoading) return;
 
     setIsLoading(true);
+    setApiError(null);
     
     try {
       await login({
-        email: formData.email,
+        email: formData.email.trim(),
         password: formData.password,
         rememberMe: formData.rememberMe,
       });
@@ -74,7 +85,9 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
         navigate('/');
       }
     } catch (error) {
-      showError('Login failed', error instanceof Error ? error.message : 'Please check your credentials');
+      const errorMessage = error instanceof Error ? error.message : 'Login failed. Please check your credentials.';
+      setApiError(errorMessage);
+      showError('Login failed', errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -118,6 +131,23 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
           </motion.p>
         </div>
 
+        {/* API Error Alert */}
+        <AnimatePresence>
+          {apiError && (
+            <motion.div
+              initial={{ opacity: 0, y: -10, height: 0 }}
+              animate={{ opacity: 1, y: 0, height: 'auto' }}
+              exit={{ opacity: 0, y: -10, height: 0 }}
+              className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-xl"
+            >
+              <div className="flex items-center space-x-3">
+                <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0" />
+                <p className="text-red-400 text-sm">{apiError}</p>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Email Field */}
@@ -126,7 +156,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.3, duration: 0.5 }}
           >
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
               Email Address
             </label>
             <div className="relative">
@@ -134,6 +164,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
                 {getInputIcon('email')}
               </div>
               <input
+                id="email"
                 type="email"
                 value={formData.email}
                 onChange={(e) => handleInputChange('email', e.target.value)}
@@ -143,9 +174,13 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
                   transition-all duration-200
                   ${errors.email ? 'border-red-500' : 'border-gray-600'}
                   ${formData.email && !errors.email ? 'border-green-500' : ''}
+                  ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}
                 `}
                 placeholder="Enter your email"
                 required
+                disabled={isLoading}
+                aria-describedby={errors.email ? 'email-error' : undefined}
+                aria-invalid={!!errors.email}
               />
             </div>
             <AnimatePresence>
@@ -154,7 +189,9 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
+                  id="email-error"
                   className="mt-1 text-sm text-red-400"
+                  role="alert"
                 >
                   {errors.email}
                 </motion.p>
@@ -168,7 +205,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.4, duration: 0.5 }}
           >
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-2">
               Password
             </label>
             <div className="relative">
@@ -176,6 +213,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
                 {getInputIcon('password')}
               </div>
               <input
+                id="password"
                 type={showPassword ? 'text' : 'password'}
                 value={formData.password}
                 onChange={(e) => handleInputChange('password', e.target.value)}
@@ -185,14 +223,20 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
                   transition-all duration-200
                   ${errors.password ? 'border-red-500' : 'border-gray-600'}
                   ${formData.password && !errors.password ? 'border-green-500' : ''}
+                  ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}
                 `}
                 placeholder="Enter your password"
                 required
+                disabled={isLoading}
+                aria-describedby={errors.password ? 'password-error' : undefined}
+                aria-invalid={!!errors.password}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-white transition-colors"
+                disabled={isLoading}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-white transition-colors disabled:opacity-50"
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
               >
                 {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
               </button>
@@ -203,7 +247,9 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
+                  id="password-error"
                   className="mt-1 text-sm text-red-400"
+                  role="alert"
                 >
                   {errors.password}
                 </motion.p>
@@ -223,7 +269,8 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
                 type="checkbox"
                 checked={formData.rememberMe}
                 onChange={(e) => handleInputChange('rememberMe', e.target.checked)}
-                className="w-4 h-4 text-purple-600 bg-gray-800 border-gray-600 rounded focus:ring-purple-500 focus:ring-2"
+                disabled={isLoading}
+                className="w-4 h-4 text-purple-600 bg-gray-800 border-gray-600 rounded focus:ring-purple-500 focus:ring-2 disabled:opacity-50"
               />
               <span className="ml-2 text-sm text-gray-300">Remember me</span>
             </label>
@@ -250,13 +297,16 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
                 : 'bg-gray-700 cursor-not-allowed'
               }
               focus:outline-none focus:ring-2 focus:ring-purple-500/50
+              disabled:opacity-50 disabled:cursor-not-allowed
             `}
+            aria-describedby={!isValid ? 'form-error' : undefined}
           >
             {isLoading ? (
               <motion.div
                 animate={{ rotate: 360 }}
                 transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
                 className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
+                aria-label="Loading..."
               />
             ) : (
               <>

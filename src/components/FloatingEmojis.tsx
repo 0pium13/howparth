@@ -113,7 +113,7 @@ const FloatingEmojis: React.FC = () => {
       {Array.from({ length: 8 }, (_, i) => (
         <motion.div
           key={`depth-${i}`}
-          className="absolute w-4 h-4 bg-purple-400/20 rounded-full blur-sm"
+          className="absolute w-4 h-4 bg-white/10 rounded-full blur-sm"
           style={{
             left: `${Math.random() * 100}%`,
             top: `${Math.random() * 100}%`,

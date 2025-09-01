@@ -94,37 +94,13 @@ const Projects: React.FC = () => {
   });
 
   return (
-    <div className="min-h-screen pt-16 bg-custom-background relative overflow-hidden">
-      {/* Purple Glow Chunks */}
-      <div className="absolute inset-0 pointer-events-none">
-        {[...Array(15)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute w-32 h-32 bg-purple-500/50 rounded-full blur-3xl"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              zIndex: Math.floor(Math.random() * 10),
-            }}
-            animate={{
-              scale: [1, 1.2, 1],
-              opacity: [0.5, 0.6, 0.5],
-            }}
-            transition={{
-              duration: 8 + i * 0.5,
-              repeat: Infinity,
-              delay: i * 0.8,
-              ease: "easeInOut",
-            }}
-          />
-        ))}
-      </div>
+    <div className="min-h-screen pt-16 bg-black relative overflow-hidden">
       
       {/* Floating Emojis in 3D Space */}
       <FloatingEmojis />
       
       {/* Hero Section */}
-      <section className="section-padding bg-gradient-to-br from-custom-background via-custom-secondary to-custom-background relative overflow-hidden">
+      <section className="section-padding bg-black relative overflow-hidden">
         <div className="container-custom">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -132,11 +108,8 @@ const Projects: React.FC = () => {
             transition={{ duration: 0.8 }}
             className="text-center space-y-6"
           >
-            <h1 className="text-4xl md:text-6xl font-bold text-custom-text">
-              My{' '}
-              <span className="text-custom-accent">
-                Projects
-              </span>
+            <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+              My Projects
             </h1>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto">
               A showcase of innovative projects that demonstrate my expertise in AI, 
@@ -147,7 +120,7 @@ const Projects: React.FC = () => {
       </section>
 
       {/* Filters Section */}
-      <section className="section-padding bg-custom-secondary border-b border-custom-accent/30">
+      <section className="section-padding bg-black border-b border-white/20">
         <div className="container-custom">
           <div className="flex flex-col lg:flex-row gap-4 md:gap-6 items-center justify-between">
             {/* Search */}
@@ -163,7 +136,7 @@ const Projects: React.FC = () => {
                 placeholder="Search projects..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-custom-accent/30 rounded-lg focus:ring-2 focus:ring-custom-accent focus:border-transparent transition-all bg-custom-background/50 text-custom-text placeholder-gray-400"
+                className="w-full pl-10 pr-4 py-3 border border-white/20 rounded-lg focus:ring-2 focus:ring-white focus:border-transparent transition-all bg-black/50 text-white placeholder-gray-400"
               />
             </motion.div>
 
@@ -183,7 +156,7 @@ const Projects: React.FC = () => {
                   className={`px-3 md:px-4 py-1.5 md:py-2 rounded-full text-xs md:text-sm font-medium transition-all ${
                     selectedCategory === category.id
                       ? 'bg-black text-white'
-                      : 'bg-black/20 text-white hover:bg-black/40 border border-white/20'
+                      : 'bg-black/20 text-white hover:bg-white/10 border border-white/20'
                   }`}
                 >
                   {category.name} ({category.count})
@@ -228,7 +201,7 @@ const Projects: React.FC = () => {
       </section>
 
       {/* Projects Grid */}
-      <section className="section-padding bg-secondary-50">
+      <section className="section-padding bg-black">
         <div className="container-custom">
           <AnimatePresence mode="wait">
             {filteredProjects.length > 0 ? (
@@ -271,11 +244,11 @@ const Projects: React.FC = () => {
                 animate={{ opacity: 1, y: 0 }}
                 className="text-center py-16"
               >
-                <div className="w-24 h-24 bg-secondary-200 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <Search className="w-12 h-12 text-secondary-400" />
+                <div className="w-24 h-24 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <Search className="w-12 h-12 text-gray-400" />
                 </div>
-                <h3 className="text-2xl font-bold text-secondary-900 mb-2">No projects found</h3>
-                <p className="text-secondary-600">
+                <h3 className="text-2xl font-bold text-white mb-2">No projects found</h3>
+                <p className="text-gray-400">
                   Try adjusting your search terms or filter criteria.
                 </p>
               </motion.div>
@@ -285,7 +258,7 @@ const Projects: React.FC = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="section-padding bg-gradient-to-r from-primary-600 to-secondary-600">
+      <section className="section-padding bg-black">
         <div className="container-custom text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -295,18 +268,18 @@ const Projects: React.FC = () => {
           >
             <h2 className="text-4xl md:text-5xl font-bold text-white">
               Have a{' '}
-              <span className="text-primary-200">
+              <span className="text-white">
                 Project in Mind?
               </span>
             </h2>
-            <p className="text-xl text-white/90">
+            <p className="text-xl text-gray-300">
               Let's collaborate to bring your ideas to life with cutting-edge technology 
               and innovative solutions.
             </p>
             <motion.button
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.95 }}
-              className="bg-black text-white hover:bg-gray-800 font-medium py-3 px-8 rounded-lg transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-primary-600"
+              className="bg-white text-black hover:bg-gray-200 font-medium py-3 px-8 rounded-lg transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-black shadow-lg hover:shadow-xl"
             >
               Start a Project
             </motion.button>

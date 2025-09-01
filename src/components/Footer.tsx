@@ -1,10 +1,16 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion, useInView } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { Instagram, Linkedin, Twitter, Mail } from 'lucide-react';
+import FloatingEmojis from './FloatingEmojis';
 
 const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
+  const isInView = useInView(React.useRef(null), {
+    once: true,
+    amount: 0.2,
+    margin: '-100px 0px -100px 0px'
+  });
 
   const socialLinks = [
     { icon: <Instagram className="w-5 h-5" />, href: 'https://instagram.com/howparth', label: 'Instagram' },
@@ -21,8 +27,69 @@ const Footer: React.FC = () => {
   ];
 
   return (
-    <footer className="bg-primary border-t border-accent/20">
-      <div className="max-w-8xl mx-auto px-8 py-16">
+    <footer className="bg-primary relative overflow-hidden">
+      {/* Purple Glow Chunks */}
+      <div className="absolute inset-0 pointer-events-none">
+        {[...Array(10)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute w-32 h-32 bg-purple-500/25 rounded-full blur-3xl"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              zIndex: Math.floor(Math.random() * 10),
+            }}
+            animate={{
+              scale: [1, 1.2, 1],
+              opacity: [0.25, 0.4, 0.25],
+            }}
+            transition={{
+              duration: 8 + i * 0.5,
+              repeat: Infinity,
+              delay: i * 0.8,
+              ease: "easeInOut",
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Background blur effects */}
+      <motion.div
+        className="absolute inset-0 bg-accent/5 backdrop-blur-3xl"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: isInView ? 1 : 0 }}
+        transition={{ duration: 1 }}
+      />
+
+      {/* Floating geometric elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        {[...Array(6)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute w-2 h-2 bg-secondary/20 rounded-full"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+            }}
+            animate={{
+              y: [0, -30, 0],
+              opacity: [0.2, 0.5, 0.2],
+              scale: [1, 1.2, 1],
+            }}
+            transition={{
+              duration: 4 + i * 0.5,
+              repeat: Infinity,
+              delay: i * 0.3,
+              ease: "easeInOut",
+            }}
+          />
+        ))}
+      </div>
+      
+      {/* Floating Emojis in 3D Space */}
+      <FloatingEmojis />
+
+      <div className="max-w-8xl mx-auto px-8 py-16 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
           {/* Brand Section */}
           <motion.div

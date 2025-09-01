@@ -12,15 +12,21 @@ import Contact from './pages/Contact';
 import LoginPage from './pages/LoginPage';
 import SignUpPage from './pages/SignUpPage';
 import AIPortal from './pages/AIPortal';
-import ChatPage from './pages/ChatPage';
+// import AdvancedChat from './components/AdvancedChat';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import { ToastManager, useToast } from './components/Toast';
 import { WelcomeToast } from './components/WelcomeToast';
+// import { serviceWorkerManager } from './utils/serviceWorker';
+// import { performanceMonitor } from './utils/performanceMonitor';
 import './App.css';
 
 // Lazy load heavy components for better performance
 const About = lazy(() => import('./pages/About'));
 const Projects = lazy(() => import('./pages/Projects'));
+const CommunityHub = lazy(() => import('./pages/CommunityHub'));
+const ChatPage = lazy(() => import('./pages/ChatPage'));
+const AIContentPortal = lazy(() => import('./pages/AIContentPortal'));
 
 // Loading component for Suspense fallback
 const LoadingSpinner = () => (
@@ -59,7 +65,6 @@ function AppContent() {
               <Route path="/" element={
                 <ErrorBoundary>
                   <>
-                    <HomepageNav />
                     <Hero />
                     <AnimatedSection />
                     <ProcessSection />
@@ -71,10 +76,20 @@ function AppContent() {
               {/* AI Portal Routes */}
               <Route path="/ai" element={
                 <ErrorBoundary>
-                  <AIPortal />
+                  <AIContentPortal />
                 </ErrorBoundary>
               } />
               <Route path="/ai/blogs" element={
+                <ErrorBoundary>
+                  <AIPortal />
+                </ErrorBoundary>
+              } />
+              <Route path="/ai/content" element={
+                <ErrorBoundary>
+                  <AIPortal />
+                </ErrorBoundary>
+              } />
+              <Route path="/ai/training" element={
                 <ErrorBoundary>
                   <AIPortal />
                 </ErrorBoundary>
@@ -84,7 +99,38 @@ function AppContent() {
                   <AIPortal />
                 </ErrorBoundary>
               } />
+              <Route path="/ai/content-generation" element={
+                <ErrorBoundary>
+                  <AIContentPortal />
+                </ErrorBoundary>
+              } />
               <Route path="/ai/quality" element={
+                <ErrorBoundary>
+                  <AIPortal />
+                </ErrorBoundary>
+              } />
+              
+              {/* Community Route */}
+              <Route path="/community" element={
+                <ErrorBoundary>
+                  <Suspense fallback={<LoadingSpinner />}>
+                    <CommunityHub />
+                  </Suspense>
+                </ErrorBoundary>
+              } />
+              
+              {/* Blog Routes */}
+              <Route path="/blog" element={
+                <ErrorBoundary>
+                  <AIPortal />
+                </ErrorBoundary>
+              } />
+              <Route path="/blog/ai-tools" element={
+                <ErrorBoundary>
+                  <AIPortal />
+                </ErrorBoundary>
+              } />
+              <Route path="/blog/tutorials" element={
                 <ErrorBoundary>
                   <AIPortal />
                 </ErrorBoundary>
@@ -102,7 +148,9 @@ function AppContent() {
               {/* Chat Route */}
               <Route path="/chat" element={
                 <ErrorBoundary>
-                  <ChatPage />
+                  <Suspense fallback={<LoadingSpinner />}>
+                    <ChatPage />
+                  </Suspense>
                 </ErrorBoundary>
               } />
               
@@ -190,7 +238,9 @@ function AppContent() {
 function App() {
   return (
     <AuthProvider>
-      <AppContent />
+      <ThemeProvider>
+        <AppContent />
+      </ThemeProvider>
     </AuthProvider>
   );
 }

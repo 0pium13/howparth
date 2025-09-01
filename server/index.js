@@ -8,6 +8,10 @@ const { Server } = require('socket.io');
 require('dotenv').config();
 
 const app = express();
+
+// Trust proxy configuration for rate limiting
+app.set('trust proxy', 'loopback');
+
 const server = createServer(app);
 const io = new Server(server, {
   cors: {
@@ -25,6 +29,7 @@ const consultationRoutes = require('./routes/consultation');
 const analyticsRoutes = require('./routes/analytics');
 const adminRoutes = require('./routes/admin');
 const userRoutes = require('./routes/user');
+const apiKeyRoutes = require('./routes/apiKeys');
 
 // Import middleware
 const { authenticateToken } = require('./middleware/auth');
@@ -35,7 +40,9 @@ const { logger } = require('./utils/logger');
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100, // limit each IP to 100 requests per windowMs
-  message: 'Too many requests from this IP, please try again later.'
+  message: 'Too many requests from this IP, please try again later.',
+  standardHeaders: true,
+  legacyHeaders: false,
 });
 
 // Middleware
@@ -67,6 +74,7 @@ app.use('/api/consultation', consultationRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/admin', authenticateToken, adminRoutes);
 app.use('/api/user', authenticateToken, userRoutes);
+app.use('/api/keys', apiKeyRoutes);
 
 // Socket.IO connection handling
 io.on('connection', (socket) => {
@@ -105,10 +113,12 @@ app.use('*', (req, res) => {
   });
 });
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3001;
 
 server.listen(PORT, () => {
-  logger.info(`Server running on port ${PORT}`);
+  logger.info(`🚀 Backend server running on http://localhost:${PORT}`);
+  logger.info(`📁 Working directory: ${process.cwd()}`);
+  logger.info(`🔗 Health check: http://localhost:${PORT}/health`);
   logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
 });
 

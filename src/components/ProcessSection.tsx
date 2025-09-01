@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion, useInView } from 'framer-motion';
 import AnimatedText from './AnimatedText';
+import FloatingEmojis from './FloatingEmojis';
 import { Brain, Layers, Target, ArrowUpRight } from 'lucide-react';
 
 const ProcessSection: React.FC = () => {
@@ -96,22 +97,67 @@ const ProcessSection: React.FC = () => {
   ];
 
   return (
-    <section className="py-32 bg-primary relative overflow-hidden">
-      {/* Background Elements */}
-      <div className="absolute inset-0">
-        <motion.div
-          className="absolute top-20 left-10 w-32 h-32 border border-accent/20"
-          initial={{ opacity: 0, rotate: 0 }}
-          animate={{ opacity: isInView ? 0.1 : 0, rotate: isInView ? 360 : 0 }}
-          transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-        />
-        <motion.div
-          className="absolute bottom-20 right-10 w-24 h-24 border border-accent/20"
-          initial={{ opacity: 0, rotate: 0 }}
-          animate={{ opacity: isInView ? 0.1 : 0, rotate: isInView ? -360 : 0 }}
-          transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-        />
+    <section className="py-16 bg-primary relative overflow-hidden">
+      {/* Purple Glow Chunks */}
+      <div className="absolute inset-0 pointer-events-none">
+        {[...Array(10)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute w-32 h-32 bg-purple-500/25 rounded-full blur-3xl"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              zIndex: Math.floor(Math.random() * 10),
+            }}
+            animate={{
+              scale: [1, 1.2, 1],
+              opacity: [0.25, 0.4, 0.25],
+            }}
+            transition={{
+              duration: 8 + i * 0.5,
+              repeat: Infinity,
+              delay: i * 0.8,
+              ease: "easeInOut",
+            }}
+          />
+        ))}
       </div>
+
+      {/* Background blur effects */}
+      <motion.div
+        className="absolute inset-0 bg-accent/5 backdrop-blur-3xl"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: isInView ? 1 : 0 }}
+        transition={{ duration: 1 }}
+      />
+
+      {/* Floating geometric elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        {[...Array(6)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute w-2 h-2 bg-secondary/20 rounded-full"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+            }}
+            animate={{
+              y: [0, -30, 0],
+              opacity: [0.2, 0.5, 0.2],
+              scale: [1, 1.2, 1],
+            }}
+            transition={{
+              duration: 4 + i * 0.5,
+              repeat: Infinity,
+              delay: i * 0.3,
+              ease: "easeInOut",
+            }}
+          />
+        ))}
+      </div>
+      
+      {/* Floating Emojis in 3D Space */}
+      <FloatingEmojis />
 
       <div className="max-w-8xl mx-auto px-8 relative z-10">
         {/* Section Header */}
@@ -126,22 +172,14 @@ const ProcessSection: React.FC = () => {
             text="PROCESS"
             type="word"
             animation="slideUp"
-            className="text-4xl md:text-6xl font-black text-secondary mb-8 tracking-wider"
+            className="text-4xl md:text-6xl font-black bg-gradient-to-r from-accent to-accent-secondary bg-clip-text text-transparent mb-8 tracking-wider"
             stagger={0.1}
             delay={0.2}
-          />
-          <AnimatedText
-            text="A systematic approach to transforming your ideas into AI-powered reality"
-            type="word"
-            animation="fadeIn"
-            className="text-xl md:text-2xl text-gray-400 max-w-3xl mx-auto font-light"
-            stagger={0.05}
-            delay={0.6}
           />
         </motion.div>
 
         {/* Process Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 lg:gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 lg:gap-12 process-grid max-w-6xl mx-auto justify-items-center">
           {processCards.map((card, index) => (
             <motion.div
               key={card.number}
@@ -149,7 +187,8 @@ const ProcessSection: React.FC = () => {
               animate={{ opacity: isInView ? 1 : 0, y: isInView ? 0 : 50 }}
               transition={{ duration: 0.8, delay: card.delay }}
               whileHover={{ y: -10 }}
-              className="group relative"
+              className="group relative w-full h-96"
+              style={{ maxWidth: '582px' }}
               onHoverStart={() => setHoveredCard(index)}
               onHoverEnd={() => setHoveredCard(null)}
               onMouseMove={(e) => {
@@ -159,7 +198,7 @@ const ProcessSection: React.FC = () => {
                 setMousePosition({ x, y });
               }}
             >
-              <div className={`process-card-premium bg-accent/5 border border-accent/20 p-12 transition-all duration-500 relative overflow-hidden ${
+              <div className={`process-card-premium bg-accent/5 border border-accent/20 p-12 transition-all duration-500 relative overflow-hidden w-full h-full ${
                 hoveredCard === index 
                   ? 'bg-accent/10 border-accent/40 shadow-2xl shadow-accent/20' 
                   : 'hover:bg-accent/10'
@@ -259,7 +298,7 @@ const ProcessSection: React.FC = () => {
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: isInView ? 1 : 0, scale: isInView ? 1 : 0.8 }}
                   transition={{ duration: 0.5, delay: card.delay + 0.2 }}
-                  className="text-6xl font-black text-accent/30 mb-6 tracking-wider relative z-10"
+                  className="text-6xl font-black mb-6 tracking-wider relative z-10 bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent"
                   style={{ transform: 'rotate(0deg)' }}
                 >
                   {card.number}

@@ -1,16 +1,17 @@
-const OpenAI = require('openai');
 const { logger } = require('../utils/logger');
+const apiKeyService = require('./apiKeyService');
 
 class AIService {
   constructor() {
-    this.openai = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY,
-    });
+    // AI service now uses per-user API keys
+    logger.info('AI Service initialized - using per-user API keys');
   }
 
   // Generate blog content
-  async generateBlogContent(prompt, options = {}) {
+  async generateBlogContent(userId, prompt, options = {}) {
     try {
+      const openai = await apiKeyService.getOpenAIClient(userId);
+      
       const {
         model = 'gpt-4',
         maxTokens = 2000,
@@ -26,7 +27,7 @@ class AIService {
         tone
       });
 
-      const response = await this.openai.chat.completions.create({
+      const response = await openai.chat.completions.create({
         model,
         messages: [
           {
@@ -61,8 +62,10 @@ class AIService {
   }
 
   // Generate AI tool recommendations
-  async generateToolRecommendations(userRequirements, options = {}) {
+  async generateToolRecommendations(userId, userRequirements, options = {}) {
     try {
+      const openai = await apiKeyService.getOpenAIClient(userId);
+      
       const {
         model = 'gpt-4',
         maxTokens = 1500,
@@ -71,7 +74,7 @@ class AIService {
 
       const prompt = this.buildRecommendationPrompt(userRequirements);
 
-      const response = await this.openai.chat.completions.create({
+      const response = await openai.chat.completions.create({
         model,
         messages: [
           {
@@ -107,17 +110,20 @@ class AIService {
   async generateChatResponse(messages, options = {}) {
     try {
       const {
-        model = 'gpt-4',
+        model = 'ft:gpt-3.5-turbo-0125:personal::CAmRK7vU', // Fine-tuned Parth model
         maxTokens = 1000,
         temperature = 0.7
       } = options;
 
-      const response = await this.openai.chat.completions.create({
+      // Get OpenAI client for the user (assuming this function needs userId)
+      const openai = await apiKeyService.getOpenAIClient(options.userId || 'default');
+
+      const response = await openai.chat.completions.create({
         model,
         messages: [
           {
             role: 'system',
-            content: `You are Parth, an AI creative specialist with 3+ years of experience. You're knowledgeable about 50+ AI tools including ChatGPT, Midjourney, Stable Diffusion, RunwayML, and DaVinci Resolve. Provide helpful, professional advice with a friendly tone.`
+            content: `You are Parth, a 19-year-old AI video creator and college student from India. You're friendly, mix Hindi-English naturally, and have a good sense of humor.`
           },
           ...messages
         ],
@@ -286,9 +292,11 @@ Be specific and actionable in your recommendations.`;
   }
 
   // Analyze writing style from existing content
-  async analyzeWritingStyle(content) {
+  async analyzeWritingStyle(userId, content) {
     try {
-      const response = await this.openai.chat.completions.create({
+      const openai = await apiKeyService.getOpenAIClient(userId);
+      
+      const response = await openai.chat.completions.create({
         model: 'gpt-4',
         messages: [
           {

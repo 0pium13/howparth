@@ -1,14 +1,5 @@
-// Browser-compatible hash function
-const hashString = (str: string): string => {
-  let hash = 0;
-  if (str.length === 0) return hash.toString();
-  for (let i = 0; i < str.length; i++) {
-    const char = str.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
-    hash = hash & hash; // Convert to 32-bit integer
-  }
-  return Math.abs(hash).toString(36);
-};
+// Enhanced Authentication Service with Real API Integration
+import CryptoJS from 'crypto-js';
 
 export interface User {
   id: string;
@@ -38,7 +29,10 @@ export interface SignUpData {
   password: string;
 }
 
-// Secure storage keys
+// API Configuration
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://api.howparth.com/api';
+
+// Storage keys
 const STORAGE_KEYS = {
   SESSION_TOKEN: 'howparth_session_token',
   USER_DATA: 'howparth_user_data',
@@ -49,19 +43,37 @@ const STORAGE_KEYS = {
 const SESSION_DURATION = 24 * 60 * 60 * 1000; // 24 hours
 const REMEMBER_ME_DURATION = 30 * 24 * 60 * 60 * 1000; // 30 days
 
-// Hash password using browser-compatible function (in production, use bcrypt on server)
-const hashPassword = (password: string): string => {
-  return hashString(password);
-};
-
-// Secure storage with encryption (simplified for demo)
+// Secure storage with AES-256 encryption
 class SecureStorage {
+  private static getEncryptionKey(): string {
+    const key = process.env.REACT_APP_ENCRYPTION_KEY || 'howparth-default-key-change-in-production';
+    if (key === 'howparth-default-key-change-in-production') {
+      console.warn('Using default encryption key. Set REACT_APP_ENCRYPTION_KEY in production!');
+    }
+    return key;
+  }
+
   private static encrypt(data: string): string {
-    return btoa(data); // Base64 encoding (use proper encryption in production)
+    try {
+      return CryptoJS.AES.encrypt(data, this.getEncryptionKey()).toString();
+    } catch (error) {
+      console.error('Encryption failed:', error);
+      throw new Error('Failed to encrypt data');
+    }
   }
 
   private static decrypt(data: string): string {
-    return atob(data); // Base64 decoding
+    try {
+      const bytes = CryptoJS.AES.decrypt(data, this.getEncryptionKey());
+      const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+      if (!decrypted) {
+        throw new Error('Decryption failed - invalid data');
+      }
+      return decrypted;
+    } catch (error) {
+      console.error('Decryption failed:', error);
+      throw new Error('Failed to decrypt data');
+    }
   }
 
   static setItem(key: string, value: string, expiresIn?: number): void {
@@ -99,92 +111,159 @@ class SecureStorage {
   }
 }
 
-// Generate unique session token
-const generateSessionToken = (): string => {
-  return `token_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-};
-
-// Mock user database (replace with actual API calls)
-class UserDatabase {
-  private static users: Map<string, User> = new Map();
-  private static sessions: Map<string, { userId: string; expires: number }> = new Map();
-
-  static async createUser(data: SignUpData): Promise<User> {
-    const existingUser = Array.from(this.users.values()).find(
-      user => user.email === data.email || user.username === data.username
-    );
-
-    if (existingUser) {
-      throw new Error(
-        existingUser.email === data.email 
-          ? 'Email already registered' 
-          : 'Username already taken'
-      );
-    }
-
-    const user: User = {
-      id: `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      username: data.username,
-      email: data.email,
-      createdAt: new Date().toISOString(),
+// API Service for authentication
+class APIService {
+  private static async makeRequest(endpoint: string, options: RequestInit = {}): Promise<any> {
+    const url = `${API_BASE_URL}${endpoint}`;
+    
+    const defaultOptions: RequestInit = {
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+      credentials: 'include', // Include cookies for HttpOnly cookies
+      ...options,
     };
 
-    this.users.set(user.id, user);
-    return user;
-  }
-
-  static async authenticateUser(email: string, hashedPassword: string): Promise<User | null> {
-    // In real app, verify password hash against stored hash
-    const user = Array.from(this.users.values()).find(u => u.email === email);
-    return user || null;
-  }
-
-  static async getUserById(userId: string): Promise<User | null> {
-    return this.users.get(userId) || null;
-  }
-
-  static async updateUser(userId: string, updates: Partial<User>): Promise<User | null> {
-    const user = this.users.get(userId);
-    if (!user) return null;
-
-    const updatedUser = { ...user, ...updates };
-    this.users.set(userId, updatedUser);
-    return updatedUser;
-  }
-
-  static createSession(userId: string, rememberMe: boolean = false): string {
-    const token = generateSessionToken();
-    const expires = Date.now() + (rememberMe ? REMEMBER_ME_DURATION : SESSION_DURATION);
-    
-    this.sessions.set(token, { userId, expires });
-    return token;
-  }
-
-  static validateSession(token: string): string | null {
-    const session = this.sessions.get(token);
-    if (!session || Date.now() > session.expires) {
-      this.sessions.delete(token);
-      return null;
+    // Add auth token if available (for Authorization header)
+    const token = SecureStorage.getItem(STORAGE_KEYS.SESSION_TOKEN);
+    if (token) {
+      defaultOptions.headers = {
+        ...defaultOptions.headers,
+        'Authorization': `Bearer ${token}`,
+      };
     }
-    return session.userId;
+
+    try {
+      const response = await fetch(url, defaultOptions);
+      
+      if (response.status === 401) {
+        // Try to refresh token
+        try {
+          const refreshResponse = await this.refreshToken();
+          if (refreshResponse.token) {
+            // Update stored token
+            SecureStorage.setItem(STORAGE_KEYS.SESSION_TOKEN, refreshResponse.token);
+            
+            // Retry original request with new token
+            defaultOptions.headers = {
+              ...defaultOptions.headers,
+              'Authorization': `Bearer ${refreshResponse.token}`,
+            };
+            
+            const retryResponse = await fetch(url, defaultOptions);
+            if (!retryResponse.ok) {
+              const errorData = await retryResponse.json().catch(() => ({}));
+              throw new Error(errorData.error || `HTTP ${retryResponse.status}: ${retryResponse.statusText}`);
+            }
+            return await retryResponse.json();
+          }
+        } catch (refreshError) {
+          // Refresh failed, clear auth state
+          SecureStorage.clear();
+          throw new Error('Session expired. Please login again.');
+        }
+      }
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        throw new Error('Network error: Unable to connect to server');
+      }
+      throw error;
+    }
   }
 
-  static removeSession(token: string): void {
-    this.sessions.delete(token);
+  static async login(credentials: LoginCredentials): Promise<{ user: User; token: string }> {
+    const response = await this.makeRequest('/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({
+        email: credentials.email,
+        password: credentials.password,
+      }),
+    });
+
+    if (!response.success) {
+      throw new Error(response.error || 'Login failed');
+    }
+
+    return response.data;
+  }
+
+  static async signup(data: SignUpData): Promise<{ user: User; token: string }> {
+    const response = await this.makeRequest('/auth/signup', {
+      method: 'POST',
+      body: JSON.stringify({
+        username: data.username,
+        email: data.email,
+        password: data.password,
+      }),
+    });
+
+    if (!response.success) {
+      throw new Error(response.error || 'Signup failed');
+    }
+
+    return response.data;
+  }
+
+  static async getCurrentUser(): Promise<User> {
+    const response = await this.makeRequest('/auth/me');
+    
+    if (!response.success) {
+      throw new Error(response.error || 'Failed to get user data');
+    }
+
+    return response.data.user;
+  }
+
+  static async refreshToken(): Promise<{ token: string }> {
+    const response = await this.makeRequest('/auth/refresh', {
+      method: 'POST',
+      credentials: 'include', // Include cookies for refresh token
+    });
+
+    if (!response.success) {
+      throw new Error(response.error || 'Token refresh failed');
+    }
+
+    return response.data;
+  }
+
+  static async logout(): Promise<void> {
+    try {
+      await this.makeRequest('/auth/logout', {
+        method: 'POST',
+        credentials: 'include', // Include cookies for logout
+      });
+    } catch (error) {
+      // Logout should succeed even if server call fails
+      console.warn('Logout server call failed:', error);
+    }
   }
 }
 
-// Main authentication service
-export class AuthService {
+// Enhanced Authentication Service
+class AuthService {
   private static instance: AuthService;
-  private authState: AuthState = {
-    user: null,
-    isAuthenticated: false,
-    isLoading: true,
-    sessionToken: null,
-  };
+  private authState: AuthState;
+  private listeners: Set<(state: AuthState) => void>;
 
-  private listeners: Set<(state: AuthState) => void> = new Set();
+  private constructor() {
+    this.authState = {
+      user: null,
+      isAuthenticated: false,
+      isLoading: true,
+      sessionToken: null,
+    };
+    this.listeners = new Set();
+    this.initializeAuth();
+  }
 
   static getInstance(): AuthService {
     if (!AuthService.instance) {
@@ -193,34 +272,56 @@ export class AuthService {
     return AuthService.instance;
   }
 
-  private constructor() {
-    this.initializeAuth();
-  }
-
   private async initializeAuth(): Promise<void> {
     try {
       const token = SecureStorage.getItem(STORAGE_KEYS.SESSION_TOKEN);
       if (token) {
-        const userId = UserDatabase.validateSession(token);
-        if (userId) {
-          const user = await UserDatabase.getUserById(userId);
-          if (user) {
+        // Try to get current user from API
+        try {
+          const user = await APIService.getCurrentUser();
+          this.authState = {
+            user,
+            isAuthenticated: true,
+            isLoading: false,
+            sessionToken: token,
+          };
+        } catch (error) {
+          // Token might be expired, try to refresh
+          try {
+            const { token: newToken } = await APIService.refreshToken();
+            const user = await APIService.getCurrentUser();
+            
+            SecureStorage.setItem(STORAGE_KEYS.SESSION_TOKEN, newToken);
+            SecureStorage.setItem(STORAGE_KEYS.USER_DATA, JSON.stringify(user));
+            
             this.authState = {
               user,
               isAuthenticated: true,
               isLoading: false,
-              sessionToken: token,
+              sessionToken: newToken,
             };
-            this.notifyListeners();
-            return;
+          } catch (refreshError) {
+            // Refresh failed, clear everything
+            SecureStorage.clear();
+            this.authState = {
+              user: null,
+              isAuthenticated: false,
+              isLoading: false,
+              sessionToken: null,
+            };
           }
         }
       }
     } catch (error) {
       console.error('Auth initialization error:', error);
+      this.authState = {
+        user: null,
+        isAuthenticated: false,
+        isLoading: false,
+        sessionToken: null,
+      };
     }
 
-    this.authState.isLoading = false;
     this.notifyListeners();
   }
 
@@ -243,12 +344,23 @@ export class AuthService {
         throw new Error('Please enter a valid email address');
       }
 
-      // Create user
-      const user = await UserDatabase.createUser(data);
+      // Call API to create user
+      const { user, token } = await APIService.signup(data);
       
-      // Auto-login after signup
-      await this.login({ email: data.email, password: data.password });
-      
+      // Store session
+      const expiresIn = REMEMBER_ME_DURATION; // Signup users get remember me by default
+      SecureStorage.setItem(STORAGE_KEYS.SESSION_TOKEN, token, expiresIn);
+      SecureStorage.setItem(STORAGE_KEYS.USER_DATA, JSON.stringify(user), expiresIn);
+      SecureStorage.setItem(STORAGE_KEYS.REMEMBER_ME, 'true', expiresIn);
+
+      this.authState = {
+        user,
+        isAuthenticated: true,
+        isLoading: false,
+        sessionToken: token,
+      };
+
+      this.notifyListeners();
       return user;
     } catch (error) {
       throw error;
@@ -257,14 +369,8 @@ export class AuthService {
 
   async login(credentials: LoginCredentials): Promise<User> {
     try {
-      const hashedPassword = hashPassword(credentials.password);
-      const user = await UserDatabase.authenticateUser(credentials.email, hashedPassword);
-      
-      if (!user) {
-        throw new Error('Invalid email or password');
-      }
-
-      const token = UserDatabase.createSession(user.id, credentials.rememberMe);
+      // Call API to authenticate
+      const { user, token } = await APIService.login(credentials);
       
       // Store session
       const expiresIn = credentials.rememberMe ? REMEMBER_ME_DURATION : SESSION_DURATION;
@@ -290,10 +396,14 @@ export class AuthService {
   }
 
   async logout(): Promise<void> {
-    if (this.authState.sessionToken) {
-      UserDatabase.removeSession(this.authState.sessionToken);
+    try {
+      // Call API to logout
+      await APIService.logout();
+    } catch (error) {
+      console.warn('Logout API call failed:', error);
     }
     
+    // Clear local storage
     SecureStorage.clear();
     
     this.authState = {
@@ -312,11 +422,10 @@ export class AuthService {
     }
 
     try {
-      const updatedUser = await UserDatabase.updateUser(this.authState.user.id, updates);
-      if (!updatedUser) {
-        throw new Error('Failed to update profile');
-      }
-
+      // For now, just update local state
+      // In a real app, you'd call an API endpoint
+      const updatedUser = { ...this.authState.user, ...updates };
+      
       this.authState.user = updatedUser;
       SecureStorage.setItem(STORAGE_KEYS.USER_DATA, JSON.stringify(updatedUser));
       this.notifyListeners();
@@ -330,15 +439,6 @@ export class AuthService {
   async updateUsername(newUsername: string): Promise<User> {
     if (!newUsername.trim() || newUsername.length < 3) {
       throw new Error('Username must be at least 3 characters');
-    }
-
-    // Check if username is already taken
-    const existingUser = Array.from(UserDatabase['users'].values()).find(
-      user => user.username === newUsername && user.id !== this.authState.user?.id
-    );
-
-    if (existingUser) {
-      throw new Error('Username already taken');
     }
 
     return this.updateProfile({ username: newUsername });

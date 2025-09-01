@@ -79,7 +79,7 @@ const AnimatedSection: React.FC = () => {
   ];
 
   return (
-    <section className="py-20 md:py-28 lg:py-32 bg-primary relative overflow-hidden">
+    <section className="py-16 bg-primary relative overflow-hidden">
       {/* Purple Glow Chunks */}
       <div className="absolute inset-0 pointer-events-none">
         {[...Array(10)].map((_, i) => (
@@ -151,22 +151,58 @@ const AnimatedSection: React.FC = () => {
             animate={{ opacity: isInView ? 1 : 0, y: isInView ? 0 : 50 }}
             transition={{ duration: 0.8 }}
           >
-            <AnimatedText
-              text="AI-POWERED CREATIVE SOLUTIONS"
-              type="word"
-              animation="slideUp"
-              className="text-3xl md:text-5xl lg:text-6xl font-black text-secondary mb-6 md:mb-8 tracking-[0.1em] md:tracking-[0.2em] leading-tight"
-              stagger={0.1}
-              delay={0.2}
-            />
-            <AnimatedText
-              text="Where creativity meets artificial intelligence to create extraordinary experiences"
-              type="word"
-              animation="fadeIn"
-              className="text-lg md:text-xl lg:text-2xl text-gray-400 max-w-3xl mx-auto font-light tracking-wide px-4"
-              stagger={0.05}
-              delay={0.8}
-            />
+            <div className="mb-6 md:mb-8">
+              <AnimatedText
+                text="AI-POWERED"
+                type="word"
+                animation="slideUp"
+                className="text-3xl md:text-5xl lg:text-6xl font-black text-secondary tracking-[0.1em] md:tracking-[0.2em] leading-tight"
+                stagger={0.1}
+                delay={0.2}
+              />
+              <AnimatedText
+                text="CREATIVE"
+                type="word"
+                animation="slideUp"
+                className="text-3xl md:text-5xl lg:text-6xl font-normal text-purple-400 tracking-[0.1em] md:tracking-[0.2em] leading-tight"
+                stagger={0.1}
+                delay={0.4}
+              />
+              <AnimatedText
+                text="SOLUTIONS"
+                type="word"
+                animation="slideUp"
+                className="text-3xl md:text-5xl lg:text-6xl font-black text-secondary tracking-[0.1em] md:tracking-[0.2em] leading-tight"
+                stagger={0.1}
+                delay={0.5}
+              />
+            </div>
+            <div className="mb-8 md:mb-12">
+              <AnimatedText
+                text="Where creativity meets"
+                type="word"
+                animation="fadeIn"
+                className="text-lg md:text-xl lg:text-2xl text-gray-400 max-w-3xl mx-auto font-light tracking-wide px-4 leading-relaxed"
+                stagger={0.05}
+                delay={0.8}
+              />
+              <AnimatedText
+                text="artificial intelligence to create"
+                type="word"
+                animation="fadeIn"
+                className="text-lg md:text-xl lg:text-2xl text-gray-400 max-w-3xl mx-auto font-light tracking-wide px-4 leading-relaxed"
+                stagger={0.05}
+                delay={1.0}
+              />
+              <AnimatedText
+                text="extraordinary experiences"
+                type="word"
+                animation="fadeIn"
+                className="text-lg md:text-xl lg:text-2xl text-gray-400 max-w-3xl mx-auto font-light tracking-wide px-4 leading-relaxed"
+                stagger={0.05}
+                delay={1.2}
+              />
+            </div>
           </motion.div>
 
           {/* Animated Sections */}

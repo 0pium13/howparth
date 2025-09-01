@@ -94,12 +94,12 @@ const ContactForm: React.FC<ContactFormProps> = ({ onSubmit }) => {
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ delay: 0.2, type: 'spring' }}
-          className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center"
+          className="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center"
         >
-          <CheckCircle className="w-8 h-8 text-green-600" />
+          <CheckCircle className="w-8 h-8 text-gray-600" />
         </motion.div>
         <h3 className="text-2xl font-bold text-black">Message Sent!</h3>
-        <p className="text-black">
+        <p className="text-gray-600">
           Thank you for reaching out. I'll get back to you as soon as possible.
         </p>
         <motion.button
@@ -131,10 +131,10 @@ const ContactForm: React.FC<ContactFormProps> = ({ onSubmit }) => {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => handleTemplateSelect(template)}
-              className="p-3 text-left bg-secondary-50 hover:bg-secondary-100 rounded-lg transition-colors border border-secondary-200"
+              className="p-3 text-left bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors border border-gray-200 text-black"
             >
               <div className="font-medium text-black">{template.title}</div>
-              <div className="text-sm text-black truncate">{template.subject}</div>
+              <div className="text-sm text-gray-600 truncate">{template.subject}</div>
             </motion.button>
           ))}
         </div>
@@ -160,7 +160,7 @@ const ContactForm: React.FC<ContactFormProps> = ({ onSubmit }) => {
               value={formData.name}
               onChange={handleInputChange}
               required
-              className="w-full px-4 py-3 border border-secondary-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent transition-all bg-white text-black placeholder-gray-500"
               placeholder="Your name"
             />
           </div>
@@ -176,7 +176,7 @@ const ContactForm: React.FC<ContactFormProps> = ({ onSubmit }) => {
               value={formData.email}
               onChange={handleInputChange}
               required
-              className="w-full px-4 py-3 border border-secondary-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent transition-all bg-white text-black placeholder-gray-500"
               placeholder="your.email@example.com"
             />
           </div>
@@ -193,7 +193,7 @@ const ContactForm: React.FC<ContactFormProps> = ({ onSubmit }) => {
             value={formData.subject}
             onChange={handleInputChange}
             required
-            className="w-full px-4 py-3 border border-secondary-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent transition-all bg-white text-black placeholder-gray-500"
             placeholder="What's this about?"
           />
         </div>
@@ -209,7 +209,7 @@ const ContactForm: React.FC<ContactFormProps> = ({ onSubmit }) => {
             onChange={handleInputChange}
             required
             rows={6}
-            className="w-full px-4 py-3 border border-secondary-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all resize-none"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent transition-all resize-none bg-white text-black placeholder-gray-500"
             placeholder="Tell me more about your project or inquiry..."
           />
         </div>
@@ -244,35 +244,35 @@ const ContactForm: React.FC<ContactFormProps> = ({ onSubmit }) => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.4 }}
-        className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-8 border-t border-secondary-200"
+        className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-8 border-t border-gray-200"
       >
         <div className="flex items-center space-x-3">
-          <div className="p-2 bg-primary-100 rounded-lg">
-            <Mail className="w-5 h-5 text-primary-600" />
+          <div className="p-2 bg-gray-100 rounded-lg">
+            <Mail className="w-5 h-5 text-gray-600" />
           </div>
           <div>
             <div className="font-medium text-black">Email</div>
-            <div className="text-black">contact@howparth.com</div>
+            <div className="text-gray-600">contact@howparth.com</div>
           </div>
         </div>
         
         <div className="flex items-center space-x-3">
-          <div className="p-2 bg-primary-100 rounded-lg">
-            <Phone className="w-5 h-5 text-primary-600" />
+          <div className="p-2 bg-gray-100 rounded-lg">
+            <Phone className="w-5 h-5 text-gray-600" />
           </div>
           <div>
             <div className="font-medium text-black">Phone</div>
-            <div className="text-black">+917709225795</div>
+            <div className="text-gray-600">+917709225795</div>
           </div>
         </div>
         
         <div className="flex items-center space-x-3">
-          <div className="p-2 bg-primary-100 rounded-lg">
-            <MapPin className="w-5 h-5 text-primary-600" />
+          <div className="p-2 bg-gray-100 rounded-lg">
+            <MapPin className="w-5 h-5 text-gray-600" />
           </div>
           <div>
             <div className="font-medium text-black">Location</div>
-            <div className="text-black">Nagpur, India</div>
+            <div className="text-gray-600">Nagpur, India</div>
           </div>
         </div>
       </motion.div>

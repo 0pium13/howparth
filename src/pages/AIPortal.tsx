@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Brain, FileText, Target, Zap, Download, Mic, MicOff, Users, Volume2, VolumeX } from 'lucide-react';
+import { Brain, FileText, Zap, Download, Mic, MicOff, Users, Volume2, VolumeX } from 'lucide-react';
 
 // Type declarations for Speech Recognition API
 declare global {
@@ -244,8 +244,7 @@ const AIPortal: React.FC = () => {
 
   const tabs = [
     { id: 'blogs', name: 'Blogs', icon: FileText },
-    { id: 'strategy', name: 'Strategy', icon: Target },
-    { id: 'quality', name: 'Quality', icon: Brain }
+    { id: 'prompts', name: 'Prompts', icon: Download }
   ];
 
   const contentTypes = [
@@ -349,8 +348,9 @@ const AIPortal: React.FC = () => {
           ))}
         </div>
 
-        {/* Content Generation Form */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Tab Content */}
+        {activeTab === 'blogs' && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           
           {/* Input Form */}
           <motion.div
@@ -582,6 +582,151 @@ const AIPortal: React.FC = () => {
             )}
           </motion.div>
         </div>
+        )}
+
+        {activeTab === 'prompts' && (
+          <div className="space-y-8">
+            {/* Prompts Hub Header */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="text-center"
+            >
+              <h2 className="text-3xl font-bold mb-4">AI Prompt Downloads Hub</h2>
+              <p className="text-gray-400 max-w-2xl mx-auto">
+                Access a curated collection of high-quality AI prompts for content creation, 
+                optimization, and creative workflows. Download JSON templates and view generation logs.
+              </p>
+            </motion.div>
+
+            {/* Live Demo Panel */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="bg-gray-900/50 backdrop-blur-xl border border-gray-800 rounded-2xl p-8"
+            >
+              <h3 className="text-2xl font-bold mb-6">Live Demo</h3>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Select Platform
+                  </label>
+                  <select className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    <option>Google Veo 3</option>
+                    <option>Higgsfield</option>
+                    <option>Runway ML</option>
+                    <option>Pika Labs</option>
+                    <option>Stable Video Diffusion</option>
+                    <option>AnimateDiff</option>
+                    <option>Text2Video-Zero</option>
+                    <option>ModelScope</option>
+                    <option>VideoCrafter</option>
+                    <option>Make-A-Video</option>
+                    <option>Phenaki</option>
+                    <option>Imagen Video</option>
+                    <option>Gen-2</option>
+                    <option>Midjourney Video</option>
+                    <option>DALL-E Video</option>
+                    <option>Stable Diffusion Video</option>
+                    <option>VideoPoet</option>
+                    <option>Video-LLaMA</option>
+                    <option>Video-ChatGPT</option>
+                    <option>Video-LLaVA</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Your Topic/Keywords
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Enter your topic..."
+                    className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  />
+                </div>
+              </div>
+              <div className="mt-6 flex space-x-4">
+                <button className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200">
+                  Generate Blog
+                </button>
+                <button className="bg-gray-700 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200">
+                  Copy to Clipboard
+                </button>
+              </div>
+            </motion.div>
+
+            {/* Prompt Cards Grid */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+            >
+              {[
+                {
+                  title: "Blog Post Generator",
+                  description: "Create engaging blog posts with SEO optimization and audience targeting",
+                  downloads: 1247,
+                  rating: 4.8
+                },
+                {
+                  title: "Social Media Post",
+                  description: "Generate viral social media content for multiple platforms",
+                  downloads: 892,
+                  rating: 4.6
+                },
+                {
+                  title: "Email Newsletter",
+                  description: "Craft compelling email newsletters that drive engagement",
+                  downloads: 567,
+                  rating: 4.7
+                },
+                {
+                  title: "Product Description",
+                  description: "Write persuasive product descriptions that convert",
+                  downloads: 734,
+                  rating: 4.5
+                },
+                {
+                  title: "Content Calendar",
+                  description: "Plan and organize your content strategy with AI assistance",
+                  downloads: 445,
+                  rating: 4.4
+                },
+                {
+                  title: "SEO Optimizer",
+                  description: "Optimize your content for search engines and improve rankings",
+                  downloads: 678,
+                  rating: 4.9
+                }
+              ].map((prompt, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 * index }}
+                  className="bg-gray-900/50 backdrop-blur-xl border border-gray-800 rounded-xl p-6 hover:border-purple-500/50 transition-all duration-300 hover:scale-105"
+                >
+                  <h3 className="text-lg font-semibold mb-2">{prompt.title}</h3>
+                  <p className="text-gray-400 text-sm mb-4">{prompt.description}</p>
+                  <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
+                    <span>⭐ {prompt.rating}</span>
+                    <span>{prompt.downloads} downloads</span>
+                  </div>
+                  <div className="flex space-x-2">
+                    <button className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200">
+                      Download JSON
+                    </button>
+                    <button className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200">
+                      View Log
+                    </button>
+                  </div>
+                </motion.div>
+              ))}
+            </motion.div>
+          </div>
+        )}
 
         {/* Collaboration Cursors */}
         <AnimatePresence>

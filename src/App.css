@@ -2,6 +2,12 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  background: #0B0B0D;
+}
+
+body {
+  background: #0B0B0D;
+  color: #E6E8EF;
 }
 
 main {
@@ -31,11 +37,23 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Enhanced Typography Styles */
+.hero-title {
+  text-shadow: var(--text-shadow);
+}
+
+.hero-subtitle {
+  text-shadow: var(--text-shadow);
+  letter-spacing: 0.5px;
+}
+
 /* Focus styles for accessibility */
 *:focus {
   outline: 2px solid #3b82f6;
   outline-offset: 2px;
 }
+
+
 
 /* Loading states */
 .loading {
@@ -62,65 +80,15 @@ html {
 /* Enhanced Color System */
 :root {
   /* Base colors */
-  --color-black: #000000;
-  --color-dark-purple: #1a0a2e;
-  --color-medium-purple: #2d1b69;
-  --color-bright-purple: #7c3aed;
-  --color-light-purple: #a855f7;
+  --color-black: #0B0B0D;
   
-  /* Gradient stops */
-  --gradient-stop-1: rgba(0, 0, 0, 1);
-  --gradient-stop-2: rgba(26, 10, 46, 0.9);
-  --gradient-stop-3: rgba(45, 27, 105, 0.8);
-  --gradient-stop-4: rgba(124, 58, 237, 0.7);
-  --gradient-stop-5: rgba(168, 85, 247, 0.6);
-  --gradient-stop-6: rgba(124, 58, 237, 0.4);
-  --gradient-stop-7: rgba(45, 27, 105, 0.2);
-  --gradient-stop-8: rgba(0, 0, 0, 1);
+  /* Typography enhancements */
+  --text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  --heading-glow: 0 0 20px rgba(255, 255, 255, 0.1);
 }
 
-/* Simple Hero Section with Black Middle Blend */
-.hero-section {
-  background: linear-gradient(
-    180deg,
-    #000000 0%,                      /* Pure black at top */
-    #000000 20%,                     /* Black continues */
-    rgba(20, 10, 30, 0.8) 30%,      /* Start very dark purple-black blend */
-    rgba(45, 25, 60, 0.6) 40%,      /* Dark purple blend */
-    rgba(79, 70, 229, 0.4) 50%,     /* Medium purple blend */
-    rgba(124, 58, 237, 0.3) 60%,    /* Light purple blend */
-    rgba(168, 85, 247, 0.2) 70%,    /* Very light purple blend */
-    rgba(124, 58, 237, 0.4) 100%    /* Back to purple at bottom */
-  );
-  min-height: 100vh;
-  position: relative;
-  overflow: hidden;
-}
-
-/* Add ONLY this overlay for black in middle */
-.hero-section::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(
-    180deg,
-    #000000 0%,                      /* Pure black at top */
-    #000000 25%,                     /* Black continues for "HOWPARTH" */
-    rgba(0, 0, 0, 0.9) 30%,         /* Strong black for "AI-POWERED" */
-    rgba(0, 0, 0, 0.8) 35%,         /* Black for "CREATIVE" */
-    rgba(0, 0, 0, 0.7) 40%,         /* Black for "SOLUTIONS" */
-    rgba(0, 0, 0, 0.6) 50%,         /* Black around subtitle */
-    rgba(0, 0, 0, 0.4) 60%,         /* Fade out black */
-    rgba(0, 0, 0, 0.2) 70%,         /* Light black */
-    rgba(0, 0, 0, 0.1) 80%,         /* Very light black */
-    transparent 90%                  /* Back to purple at bottom */
-  );
-  z-index: 1;
-  pointer-events: none;
-}
+/* Hero Section - Using legacy CSS gradient */
+/* .hero-section styles are now handled by main.1b97050f.css */
 
 /* Make sure content stays on top */
 .hero-content {
@@ -130,115 +98,18 @@ html {
 
 /* Enhanced Solar Background Integration */
 .solar-background {
-  position: fixed;
-  bottom: -40vh;
-  left: 50%;
-  width: 100vh;
-  height: 100vh;
-  transform: translateX(-50%);
-  opacity: 0;
-  z-index: -2;
-  transition: all 0.8s cubic-bezier(0.25, 0.4, 0.25, 1);
-  pointer-events: none;
-  will-change: transform, opacity;
+  display: none; /* Completely hide the solar background */
 }
 
-.solar-background::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: radial-gradient(
-    circle at center,
-    rgba(139, 69, 193, 0.6) 0%,
-    rgba(124, 58, 237, 0.5) 15%,
-    rgba(167, 139, 250, 0.4) 30%,
-    rgba(79, 70, 229, 0.3) 45%,
-    rgba(124, 58, 237, 0.2) 60%,
-    rgba(45, 25, 60, 0.1) 75%,
-    rgba(20, 10, 30, 0.05) 85%,
-    transparent 100%
-  );
-  border-radius: 50%;
-  animation: solar-breathe 8s ease-in-out infinite;
-}
+/* Remove custom cursor - causing visibility issues */
 
-.solar-background::after {
-  content: '';
-  position: absolute;
-  top: -5%;
-  left: -5%;
-  right: -5%;
-  bottom: -5%;
-  background: 
-    radial-gradient(
-      circle at 40% 30%,
-      rgba(168, 85, 247, 0.3) 0%,
-      transparent 40%
-    ),
-    radial-gradient(
-      circle at 70% 60%,
-      rgba(124, 58, 237, 0.25) 0%,
-      transparent 50%
-    ),
-    radial-gradient(
-      circle at 30% 80%,
-      rgba(139, 69, 193, 0.2) 0%,
-      transparent 60%
-    );
-  border-radius: 50%;
-  animation: solar-flares 12s linear infinite;
-}
+/* Remove solar pulse animation - no longer needed */
 
-.solar-layer-1 {
-  position: absolute;
-  top: -5%;
-  left: -5%;
-  right: -5%;
-  bottom: -5%;
-  background: radial-gradient(
-    circle at 60% 30%,
-    rgba(147, 51, 234, 0.3) 0%,
-    transparent 70%
-  );
-  border-radius: 50%;
-  animation: rotate-slow 8s linear infinite;
-  mix-blend-mode: screen;
-}
+/* Remove solar background purple effects */
 
-.solar-layer-2 {
-  position: absolute;
-  top: -8%;
-  left: -8%;
-  right: -8%;
-  bottom: -8%;
-  background: radial-gradient(
-    circle at 40% 60%,
-    rgba(126, 34, 206, 0.25) 0%,
-    transparent 60%
-  );
-  border-radius: 50%;
-  animation: rotate-medium 12s linear infinite reverse;
-  mix-blend-mode: overlay;
-}
+/* Remove solar background after effects */
 
-.solar-layer-3 {
-  position: absolute;
-  top: -12%;
-  left: -12%;
-  right: -12%;
-  bottom: -12%;
-  background: radial-gradient(
-    circle at 80% 20%,
-    rgba(159, 122, 234, 0.2) 0%,
-    transparent 50%
-  );
-  border-radius: 50%;
-  animation: rotate-fast 6s linear infinite;
-  mix-blend-mode: soft-light;
-}
+/* Remove solar layer purple effects */
 
 /* Enhanced Solar Animation Keyframes */
 @keyframes solar-breathe {
@@ -303,14 +174,7 @@ html {
 .section-divider {
   position: relative;
   height: 150px;
-  background: linear-gradient(
-    180deg,
-    rgba(124, 58, 237, 0.4) 0%,
-    rgba(79, 70, 229, 0.3) 25%,
-    rgba(45, 25, 60, 0.2) 50%,
-    rgba(20, 10, 30, 0.1) 75%,
-    #000000 100%
-  );
+  background: #000000;
   overflow: hidden;
 }
 
@@ -321,13 +185,7 @@ html {
   left: 0;
   right: 0;
   bottom: 0;
-  background: 
-    radial-gradient(
-      ellipse 120% 100% at 50% 0%,
-      rgba(124, 58, 237, 0.2) 0%,
-      rgba(139, 69, 193, 0.1) 30%,
-      transparent 70%
-    );
+  background: transparent;
 }
 
 /* Outline Text Section Styles */
@@ -388,7 +246,7 @@ html {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, rgba(124, 58, 237, 0.1) 0%, rgba(6, 182, 212, 0.1) 100%);
+  background: transparent;
   opacity: 0;
   transition: opacity 0.4s ease;
   pointer-events: none;
@@ -398,7 +256,7 @@ html {
   transform: translateY(-8px) scale(1.02);
   box-shadow: 
     0 20px 40px rgba(0, 0, 0, 0.4),
-    0 0 0 1px rgba(124, 58, 237, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.2),
     inset 0 0 0 1px rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(30px);
 }
@@ -409,12 +267,12 @@ html {
 
 .process-card:hover .process-icon {
   transform: rotate(5deg) scale(1.1);
-  filter: drop-shadow(0 0 20px rgba(124, 58, 237, 0.5));
+  filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.3));
 }
 
 .process-card:hover .process-number {
-  color: rgba(124, 58, 237, 0.8);
-  text-shadow: 0 0 10px rgba(124, 58, 237, 0.3);
+  color: rgba(255, 255, 255, 0.9);
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
 }
 
 .process-card:hover .process-title {
@@ -569,10 +427,7 @@ html {
     animation: none;
   }
   
-  .line-purple-1,
-  .line-purple-2,
-  .purple-wave-1,
-  .purple-wave-2,
+  /* Remove purple references */
   .floating-orb {
     animation: none;
   }
@@ -581,8 +436,7 @@ html {
 /* GPU acceleration for performance */
 .hero-section,
 .solar-background,
-.process-cards,
-.purple-waves-container {
+.process-cards {
   will-change: transform;
   transform: translateZ(0);
 }
@@ -602,48 +456,7 @@ html {
   text-align: center;
 }
 
-.impact-lines {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  pointer-events: none;
-}
-
-.line-purple-1 {
-  position: absolute;
-  top: 20%;
-  left: -10%;
-  right: -10%;
-  height: 2px;
-  background: linear-gradient(90deg, 
-    transparent 0%, 
-    rgba(124, 58, 237, 0.8) 25%, 
-    rgba(168, 85, 247, 1) 50%, 
-    rgba(124, 58, 237, 0.8) 75%, 
-    transparent 100%
-  );
-  transform: rotate(-2deg);
-  animation: line-glow 3s ease-in-out infinite alternate;
-}
-
-.line-purple-2 {
-  position: absolute;
-  bottom: 20%;
-  left: -10%;
-  right: -10%;
-  height: 2px;
-  background: linear-gradient(90deg, 
-    transparent 0%, 
-    rgba(139, 69, 193, 0.6) 30%, 
-    rgba(147, 51, 234, 0.9) 50%, 
-    rgba(139, 69, 193, 0.6) 70%, 
-    transparent 100%
-  );
-  transform: rotate(2deg);
-  animation: line-glow 4s ease-in-out infinite alternate-reverse;
-}
+/* Remove purple lines - clean design */
 
 .impact-text {
   font-size: clamp(2rem, 5vw, 4rem);
@@ -654,164 +467,9 @@ html {
   z-index: 2;
 }
 
-.highlight-gradient {
-  background: linear-gradient(135deg, #a855f7, #8b5cf6, #7c3aed);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
+/* Remove purple gradient and floating orb - clean design */
 
-.floating-orb {
-  position: absolute;
-  top: 50%;
-  right: 10%;
-  width: 200px;
-  height: 200px;
-  background: radial-gradient(circle, rgba(124, 58, 237, 0.3), transparent);
-  border-radius: 50%;
-  filter: blur(40px);
-  animation: float-orb 6s ease-in-out infinite;
-}
-
-@keyframes line-glow {
-  0% { opacity: 0.5; transform: rotate(-2deg) scaleX(0.8); }
-  100% { opacity: 1; transform: rotate(-2deg) scaleX(1.2); }
-}
-
-@keyframes float-orb {
-  0%, 100% { transform: translateY(-50%) translateX(0); }
-  50% { transform: translateY(-50%) translateX(20px); }
-}
-
-/* Purple Wave Lines - Responsive Full Width */
-.purple-waves-container {
-  position: absolute;
-  width: 100vw;
-  left: 50%;
-  transform: translateX(-50%);
-  height: 100%;
-  pointer-events: none;
-  overflow: hidden;
-}
-
-.purple-wave-1 {
-  position: absolute;
-  top: 30%;
-  left: -5%;
-  right: -5%;
-  width: 110vw;
-  height: 3px;
-  background: linear-gradient(90deg,
-    transparent 0%,
-    rgba(124, 58, 237, 0.0) 5%,
-    rgba(147, 51, 234, 0.8) 25%,
-    rgba(168, 85, 247, 1) 50%,
-    rgba(147, 51, 234, 0.8) 75%,
-    rgba(124, 58, 237, 0.0) 95%,
-    transparent 100%
-  );
-  transform: rotate(-1deg);
-  animation: wave-flow 8s linear infinite;
-}
-
-.purple-wave-2 {
-  position: absolute;
-  bottom: 30%;
-  left: -5%;
-  right: -5%;
-  width: 110vw;
-  height: 2px;
-  background: linear-gradient(90deg,
-    transparent 0%,
-    rgba(139, 69, 193, 0.0) 8%,
-    rgba(124, 58, 237, 0.6) 30%,
-    rgba(147, 51, 234, 0.9) 50%,
-    rgba(124, 58, 237, 0.6) 70%,
-    rgba(139, 69, 193, 0.0) 92%,
-    transparent 100%
-  );
-  transform: rotate(1deg);
-  animation: wave-flow 12s linear infinite reverse;
-}
-
-/* Responsive Wave Sizing */
-@media (min-width: 768px) {
-  .purple-wave-1,
-  .purple-wave-2 {
-    width: 120vw;
-    left: -10%;
-    right: -10%;
-  }
-}
-
-@media (min-width: 1024px) {
-  .purple-wave-1,
-  .purple-wave-2 {
-    width: 130vw;
-    left: -15%;
-    right: -15%;
-  }
-}
-
-@media (min-width: 1280px) {
-  .purple-wave-1,
-  .purple-wave-2 {
-    width: 140vw;
-    left: -20%;
-    right: -20%;
-  }
-}
-
-@media (min-width: 1536px) {
-  .purple-wave-1,
-  .purple-wave-2 {
-    width: 150vw;
-    left: -25%;
-    right: -25%;
-  }
-}
-
-/* Mobile Optimizations */
-@media (max-width: 767px) {
-  .purple-wave-1,
-  .purple-wave-2 {
-    width: 100vw;
-    left: 0;
-    right: 0;
-    height: 2px;
-  }
-  
-  .purple-wave-1 {
-    top: 25%;
-  }
-  
-  .purple-wave-2 {
-    bottom: 25%;
-  }
-}
-
-@media (max-width: 479px) {
-  .purple-wave-1,
-  .purple-wave-2 {
-    width: 95vw;
-    left: 2.5%;
-    right: 2.5%;
-    height: 1.5px;
-  }
-  
-  .purple-wave-1 {
-    top: 20%;
-  }
-  
-  .purple-wave-2 {
-    bottom: 20%;
-  }
-}
-
-@keyframes wave-flow {
-  0% { transform: translateX(-50px) rotate(-1deg); }
-  100% { transform: translateX(50px) rotate(-1deg); }
-}
+/* Remove purple wave lines - clean design */
 
 /* Premium Button Design System */
 .btn-primary {
@@ -860,7 +518,7 @@ html {
 
 .btn-primary:hover {
   transform: translateY(-2px) !important;
-  box-shadow: 0 10px 25px rgba(124, 58, 237, 0.4) !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3) !important;
 }
 
 .btn-primary:hover::after {
@@ -900,8 +558,8 @@ html {
 .explore-work-btn:hover {
   background: #ffffff !important;
   color: #000000 !important;
-  transform: translateY(-2px) !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  transform: translateY(-2px) scale(1.02) !important;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2) !important;
 }
 
 .explore-work-btn:hover .btn-icon {
@@ -910,16 +568,46 @@ html {
 
 /* Accessibility Improvements */
 *:focus {
-  outline: 2px solid #a855f7;
+  outline: 2px solid #ffffff;
   outline-offset: 2px;
 }
+
+/* Completely disable browser tooltips */
+* {
+  -webkit-tooltip: none !important;
+  tooltip: none !important;
+}
+
+*:hover::after,
+*:hover::before {
+  content: none !important;
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+}
+
+/* Disable any title attribute tooltips */
+[title] {
+  position: relative;
+}
+
+[title]:hover::after {
+  content: none !important;
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+}
+
+
+
+
 
 *:focus:not(:focus-visible) {
   outline: none;
 }
 
 *:focus-visible {
-  outline: 2px solid #a855f7;
+  outline: 2px solid #ffffff;
   outline-offset: 2px;
 }
 
@@ -947,6 +635,22 @@ html {
 /* Fix z-index stacking */
 .z-10 {
   z-index: 10;
+}
+
+/* Ensure hero icons have correct background */
+.hero-content .flex.justify-center.items-center.space-x-6 div[class*="p-3"],
+.hero-content .flex.justify-center.items-center.space-x-6 div[class*="p-4"] {
+  background-color: rgba(0, 0, 0, 0.2) !important;
+  backdrop-filter: blur(4px) !important;
+}
+
+/* Hero section gradient handled by main.1b97050f.css */
+
+/* DISABLE HOVER EFFECT ON HERO SECTION - FIXES BLUE STRIPE ISSUE */
+.hero-section:hover {
+  background: inherit !important;
+  background-image: inherit !important;
+  background-color: inherit !important;
 }
 
 .z-20 {
@@ -1060,9 +764,34 @@ html {
   }
   
   /* Fix ProcessSection spacing for 6 cards */
-  .process-grid {
-    gap: 1rem;
+.process-grid {
+  gap: 1rem;
+}
+
+/* Perfect alignment for 6 process boxes */
+.process-card-premium {
+  height: 100%;
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  width: 100%;
+  max-width: 400px;
+}
+
+/* Ensure consistent card heights */
+.grid.grid-cols-1.md\:grid-cols-2.lg\:grid-cols-3 {
+  align-items: stretch;
+}
+
+/* Mobile optimization for process cards */
+@media (max-width: 768px) {
+  .process-card-premium {
+    min-height: 350px;
+    max-width: 100%;
   }
+}
   
   /* Reduce process card padding on mobile */
   .p-12 {
@@ -1317,19 +1046,7 @@ html {
 
 /* Mobile-Optimized Blending */
 @media (max-width: 768px) {
-  .hero-section {
-    background: linear-gradient(
-      180deg,
-      rgba(45, 25, 80, 0.9) 0%,
-      rgba(79, 70, 229, 0.7) 20%,
-      rgba(124, 58, 237, 0.5) 30%,
-      rgba(30, 15, 50, 0.6) 45%,
-      #000000 60%,
-      #000000 75%,
-      rgba(15, 8, 25, 0.8) 90%,
-      #000000 100%
-    );
-  }
+  /* Hero section gradient handled by main.1b97050f.css */
   
   .solar-background {
     width: 80vh;
@@ -1338,30 +1055,19 @@ html {
   }
   
   .solar-background::before {
-    background: radial-gradient(
-      circle at center,
-      rgba(124, 58, 237, 0.4) 0%,
-      rgba(79, 70, 229, 0.3) 40%,
-      rgba(45, 25, 60, 0.2) 70%,
-      transparent 100%
-    );
+    background: transparent;
   }
 }
 
 /* Reduce complexity for lower-end devices */
 @media (max-width: 480px) {
+  /* Hero section gradient handled by main.1b97050f.css */
+  
   .solar-background::after {
     display: none; /* Remove complex animations */
   }
   
-  .hero-section::before {
-    background: linear-gradient(
-      180deg,
-      rgba(124, 58, 237, 0.2) 40%,
-      rgba(45, 25, 60, 0.1) 70%,
-      transparent 100%
-    );
-  }
+  /* Hero section styles handled by main.1b97050f.css */
 }
 
 /* Seamless marquee animation */
@@ -1563,3 +1269,24 @@ html {
     gap: 3rem;
   }
 }
+
+/* Smooth animations for AI Content Portal */
+@keyframes twinkle {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+
+/* Fix textarea focus issues */
+textarea:focus {
+  outline: none !important;
+  border-color: #8B5CF6 !important;
+  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.3) !important;
+}
+
+/* Prevent flickering */
+.content-container {
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+

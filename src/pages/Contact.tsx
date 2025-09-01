@@ -64,37 +64,14 @@ const Contact: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen pt-16 bg-custom-background relative overflow-hidden">
-      {/* Purple Glow Chunks */}
-      <div className="absolute inset-0 pointer-events-none">
-        {[...Array(12)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute w-32 h-32 bg-purple-500/30 rounded-full blur-3xl"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              zIndex: Math.floor(Math.random() * 10),
-            }}
-            animate={{
-              scale: [1, 1.2, 1],
-              opacity: [0.3, 0.5, 0.3],
-            }}
-            transition={{
-              duration: 8 + i * 0.5,
-              repeat: Infinity,
-              delay: i * 0.8,
-              ease: "easeInOut",
-            }}
-          />
-        ))}
-      </div>
+    <div className="min-h-screen pt-16 bg-black relative overflow-hidden">
+      {/* Remove purple glow chunks - clean black background */}
       
       {/* Floating Emojis in 3D Space */}
       <FloatingEmojis />
       
       {/* Hero Section */}
-      <section className="section-padding bg-gradient-to-br from-custom-background via-custom-secondary to-custom-background relative overflow-hidden">
+      <section className="section-padding bg-black relative overflow-hidden">
         <div className="container-custom">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -102,11 +79,8 @@ const Contact: React.FC = () => {
             transition={{ duration: 0.8 }}
             className="text-center space-y-6"
           >
-            <h1 className="text-4xl md:text-6xl font-bold text-custom-text">
-              Let's{' '}
-              <span className="text-custom-accent">
-                Connect
-              </span>
+            <h1 className="text-4xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+              Let's Connect
             </h1>
             <p className="text-xl text-gray-300 max-w-3xl mx-auto">
               Ready to start your next project? I'm here to help bring your ideas to life 
@@ -117,7 +91,7 @@ const Contact: React.FC = () => {
       </section>
 
       {/* Contact Information */}
-      <section className="section-padding bg-custom-secondary relative overflow-hidden">
+      <section className="section-padding bg-black relative overflow-hidden">
         <div className="container-custom">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 mb-12 md:mb-16">
             {contactInfo.map((info, index) => (
@@ -127,11 +101,11 @@ const Contact: React.FC = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 whileHover={{ y: -8 }}
-                className="card p-4 md:p-6 text-center group border-2 border-gradient-to-r from-purple-500 to-blue-500 bg-gradient-to-br from-white to-gray-50 shadow-xl hover:shadow-2xl transition-all duration-300"
+                className="card p-4 md:p-6 text-center group border-2 border-gray-200 bg-white shadow-xl hover:shadow-2xl transition-all duration-300"
               >
                 <motion.div
                   whileHover={{ scale: 1.1, rotate: 5 }}
-                  className="w-12 h-12 md:w-16 md:h-16 bg-primary-100 rounded-full flex items-center justify-center text-primary-600 mx-auto mb-3 md:mb-4 group-hover:bg-primary-200 transition-colors"
+                  className="w-12 h-12 md:w-16 md:h-16 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 mx-auto mb-3 md:mb-4 group-hover:bg-gray-200 transition-colors"
                 >
                   {info.icon}
                 </motion.div>
@@ -141,7 +115,7 @@ const Contact: React.FC = () => {
                 {info.action ? (
                   <a
                     href={info.action}
-                    className="text-primary-600 hover:text-primary-700 font-medium text-lg block mb-2 transition-colors"
+                    className="text-black hover:text-gray-600 font-medium text-lg block mb-2 transition-colors"
                   >
                     {info.value}
                   </a>
@@ -150,7 +124,7 @@ const Contact: React.FC = () => {
                     {info.value}
                   </p>
                 )}
-                <p className="text-black">
+                <p className="text-gray-600">
                   {info.description}
                 </p>
               </motion.div>
@@ -160,7 +134,7 @@ const Contact: React.FC = () => {
       </section>
 
       {/* Main Contact Section */}
-      <section className="section-padding bg-secondary-50">
+      <section className="section-padding bg-black">
         <div className="container-custom">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {/* Contact Form */}
@@ -168,13 +142,13 @@ const Contact: React.FC = () => {
               initial={{ opacity: 0, x: -50 }}
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8 }}
-              className="card p-8"
+              className="card p-8 bg-white border border-gray-200"
             >
               <div className="mb-8">
                 <h2 className="text-3xl font-bold text-black mb-4">
                   Send a Message
                 </h2>
-                <p className="text-black">
+                <p className="text-gray-600">
                   Fill out the form below and I'll get back to you as soon as possible.
                 </p>
               </div>
@@ -189,16 +163,16 @@ const Contact: React.FC = () => {
               className="space-y-8"
             >
               {/* Quick Response */}
-              <div className="card p-6">
+              <div className="card p-6 bg-white border border-gray-200">
                 <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                    <CheckCircle className="w-6 h-6 text-green-600" />
+                  <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
+                    <CheckCircle className="w-6 h-6 text-gray-600" />
                   </div>
                   <div>
                     <h3 className="text-xl font-bold text-black mb-2">
                       Quick Response
                     </h3>
-                    <p className="text-black">
+                    <p className="text-gray-600">
                       I typically respond to all inquiries within 24 hours during business days.
                     </p>
                   </div>
@@ -206,25 +180,25 @@ const Contact: React.FC = () => {
               </div>
 
               {/* Availability */}
-              <div className="card p-6">
+              <div className="card p-6 bg-white border border-gray-200">
                 <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                    <CheckCircle className="w-6 h-6 text-green-600" />
+                  <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
+                    <CheckCircle className="w-6 h-6 text-gray-600" />
                   </div>
                   <div>
                     <h3 className="text-xl font-bold text-black mb-2">
                       Availability
                     </h3>
-                    <p className="text-black mb-3">
+                    <p className="text-gray-600 mb-3">
                       Currently available for new projects and collaborations.
                     </p>
                     <div className="space-y-2 text-sm">
                       <div className="flex justify-between">
-                        <span className="text-black">Monday - Friday:</span>
+                        <span className="text-gray-600">Monday - Friday:</span>
                         <span className="font-medium text-black">9:00 AM - 6:00 PM PST</span>
                       </div>
                       <div className="flex justify-between">
-                        <span className="text-black">Weekends:</span>
+                        <span className="text-gray-600">Weekends:</span>
                         <span className="font-medium text-black">By appointment</span>
                       </div>
                     </div>
@@ -233,7 +207,7 @@ const Contact: React.FC = () => {
               </div>
 
               {/* Social Links */}
-              <div className="card p-6">
+              <div className="card p-6 bg-white border border-gray-200">
                 <h3 className="text-xl font-bold text-black mb-4">
                   Connect on Social Media
                 </h3>
@@ -246,7 +220,7 @@ const Contact: React.FC = () => {
                       rel="noopener noreferrer"
                       whileHover={{ scale: 1.1, y: -2 }}
                       whileTap={{ scale: 0.95 }}
-                      className={`p-3 bg-secondary-100 rounded-lg text-black transition-colors ${social.color}`}
+                      className={`p-3 bg-gray-100 rounded-lg text-gray-600 transition-colors ${social.color}`}
                     >
                       {social.icon}
                     </motion.a>
@@ -255,7 +229,7 @@ const Contact: React.FC = () => {
               </div>
 
               {/* FAQ */}
-              <div className="card p-6">
+              <div className="card p-6 bg-white border border-gray-200">
                 <h3 className="text-xl font-bold text-black mb-4">
                   Frequently Asked Questions
                 </h3>
@@ -274,11 +248,11 @@ const Contact: React.FC = () => {
                       answer: 'Project timelines vary based on complexity, typically ranging from 2-8 weeks.',
                     },
                   ].map((faq, index) => (
-                    <div key={index} className="border-b border-secondary-200 pb-4 last:border-b-0">
+                    <div key={index} className="border-b border-gray-200 pb-4 last:border-b-0">
                       <h4 className="font-semibold text-black mb-2">
                         {faq.question}
                       </h4>
-                      <p className="text-black text-sm">
+                      <p className="text-gray-600 text-sm">
                         {faq.answer}
                       </p>
                     </div>
@@ -291,7 +265,7 @@ const Contact: React.FC = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="section-padding bg-gradient-to-r from-primary-600 to-secondary-600">
+      <section className="section-padding bg-black">
         <div className="container-custom text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -301,11 +275,11 @@ const Contact: React.FC = () => {
           >
             <h2 className="text-4xl md:text-5xl font-bold text-white">
               Ready to{' '}
-              <span className="text-primary-200">
+              <span className="text-white">
                 Get Started?
               </span>
             </h2>
-            <p className="text-xl text-white/90">
+            <p className="text-xl text-gray-300">
               Let's discuss your project requirements and create something amazing together.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
