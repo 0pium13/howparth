@@ -65,6 +65,19 @@ app.get('/health', (req, res) => {
   });
 });
 
+// Test fine-tuned model endpoint
+app.get('/api/test-model', async (req, res) => {
+  try {
+    res.status(200).json({ 
+      status: 'Fine-tuned model test endpoint ready',
+      model: 'ft:gpt-3.5-turbo-0125:personal::CAmRK7vU',
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/blog', blogRoutes);
