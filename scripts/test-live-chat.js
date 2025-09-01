@@ -22,7 +22,7 @@ const testLiveChat = async () => {
     try {
       console.log(`\n🎯 Testing: "${prompt}"`);
       
-      const response = await fetch('/api/chat', {
+      const response = await fetch('https://howparth.vercel.app/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

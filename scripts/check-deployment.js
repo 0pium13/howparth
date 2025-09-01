@@ -12,7 +12,7 @@ const checkDeploymentStatus = async () => {
   try {
     // Check if the website is accessible
     console.log('🌐 Checking website accessibility...');
-    const websiteResponse = await fetch('https://your-website-url.vercel.app');
+    const websiteResponse = await fetch('https://howparth.vercel.app');
     
     if (websiteResponse.ok) {
       console.log('✅ Website is accessible');
@@ -22,7 +22,7 @@ const checkDeploymentStatus = async () => {
     
     // Check if the chat API is working
     console.log('\n💬 Testing chat API...');
-    const chatResponse = await fetch('https://your-website-url.vercel.app/api/chat', {
+    const chatResponse = await fetch('https://howparth.vercel.app/api/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
