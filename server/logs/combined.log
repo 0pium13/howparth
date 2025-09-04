@@ -268,3 +268,20 @@
 {"level":"info","message":"Attempt 1: Using model ft:gpt-3.5-turbo-0125:personal::CAmRK7vU for user final-test","service":"howparth-api","timestamp":"2025-09-05 03:43:38"}
 {"level":"info","message":"✅ Success: Generated response in 973ms using ft:gpt-3.5-turbo-0125:personal::CAmRK7vU","service":"howparth-api","timestamp":"2025-09-05 03:43:39"}
 {"level":"info","message":"✅ Chat request successful for user final-test in 973ms","service":"howparth-api","timestamp":"2025-09-05 03:43:39"}
+{"level":"info","message":"SIGTERM received, shutting down gracefully","service":"howparth-api","timestamp":"2025-09-05 03:59:45"}
+{"level":"info","message":"AI Service initialized - using per-user API keys","service":"howparth-api","timestamp":"2025-09-05 04:01:33"}
+{"level":"info","message":"Enhanced AI Service initialized with robust error handling","service":"howparth-api","timestamp":"2025-09-05 04:01:33"}
+{"level":"info","message":"🚀 Backend server running on http://0.0.0.0:3001","service":"howparth-api","timestamp":"2025-09-05 04:01:33"}
+{"level":"info","message":"📁 Working directory: /Users/opium/HOWPARTH/howparth","service":"howparth-api","timestamp":"2025-09-05 04:01:33"}
+{"level":"info","message":"🔗 Health check: http://localhost:3001/health","service":"howparth-api","timestamp":"2025-09-05 04:01:33"}
+{"level":"info","message":"🌐 Network accessible on all interfaces","service":"howparth-api","timestamp":"2025-09-05 04:01:33"}
+{"level":"info","message":"Environment: development","service":"howparth-api","timestamp":"2025-09-05 04:01:33"}
+{"level":"info","message":"✅ Enhanced Chat Controller initialized with robust error handling","service":"howparth-api","timestamp":"2025-09-05 04:01:33"}
+{"level":"info","message":"AI Service initialized - using per-user API keys","service":"howparth-api","timestamp":"2025-09-05 04:14:10"}
+{"level":"info","message":"Enhanced AI Service initialized with robust error handling","service":"howparth-api","timestamp":"2025-09-05 04:14:10"}
+{"level":"info","message":"🚀 Backend server running on http://0.0.0.0:3001","service":"howparth-api","timestamp":"2025-09-05 04:14:10"}
+{"level":"info","message":"📁 Working directory: /Users/opium/HOWPARTH/howparth","service":"howparth-api","timestamp":"2025-09-05 04:14:10"}
+{"level":"info","message":"🔗 Health check: http://localhost:3001/health","service":"howparth-api","timestamp":"2025-09-05 04:14:10"}
+{"level":"info","message":"🌐 Network accessible on all interfaces","service":"howparth-api","timestamp":"2025-09-05 04:14:10"}
+{"level":"info","message":"Environment: development","service":"howparth-api","timestamp":"2025-09-05 04:14:10"}
+{"level":"info","message":"✅ Enhanced Chat Controller initialized with robust error handling","service":"howparth-api","timestamp":"2025-09-05 04:14:10"}

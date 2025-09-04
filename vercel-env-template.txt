@@ -1,0 +1,58 @@
+# Vercel Environment Variables Template
+# Copy this to your Vercel project settings under Environment Variables
+
+# ========================================
+# REQUIRED - OpenAI Configuration
+# ========================================
+OPENAI_API_KEY=sk-your-openai-api-key-here
+FINE_TUNED_MODEL_ID=ft:gpt-3.5-turbo-0125:personal::CAmRK7vU
+
+# ========================================
+# REQUIRED - Admin Authentication
+# ========================================
+ADMIN_JWT_SECRET=your-super-secure-admin-jwt-secret-here
+
+# ========================================
+# OPTIONAL - Reddit Scraper (for automated data collection)
+# ========================================
+REDDIT_CLIENT_ID=your-reddit-app-client-id
+REDDIT_CLIENT_SECRET=your-reddit-app-client-secret
+
+# ========================================
+# OPTIONAL - Database (for production data persistence)
+# ========================================
+DATABASE_URL=postgresql://username:password@host:5432/database
+
+# ========================================
+# OPTIONAL - Usage Limits
+# ========================================
+DAILY_TOKEN_LIMIT=100000
+MONTHLY_COST_LIMIT=100
+
+# ========================================
+# OPTIONAL - NextAuth.js (for user authentication)
+# ========================================
+NEXTAUTH_SECRET=your-nextauth-secret-here
+NEXTAUTH_URL=https://your-domain.vercel.app
+
+# ========================================
+# OPTIONAL - Google OAuth (for social login)
+# ========================================
+GOOGLE_CLIENT_ID=your-google-oauth-client-id
+GOOGLE_CLIENT_SECRET=your-google-oauth-client-secret
+
+# ========================================
+# SETUP INSTRUCTIONS:
+# ========================================
+# 1. Go to your Vercel dashboard
+# 2. Navigate to your project settings
+# 3. Go to "Environment Variables" section
+# 4. Add each variable from this template
+# 5. Replace placeholder values with your actual credentials
+# 6. Redeploy your application
+#
+# SECURITY NOTES:
+# - Never commit actual API keys to version control
+# - Use different keys for development and production
+# - Rotate keys regularly
+# - Monitor API usage to prevent unexpected costs

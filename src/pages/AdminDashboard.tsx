@@ -138,7 +138,7 @@ const AdminDashboard: React.FC = () => {
   });
 
   // API endpoints
-  const API_BASE = 'http://localhost:3002/api/monitoring';
+  const API_BASE = '/api/admin/analytics';
 
   // Fetch system health data
   const fetchSystemHealth = async () => {

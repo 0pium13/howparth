@@ -19,7 +19,43 @@
       "dest": "/index.html"
     }
   ],
+  "functions": {
+    "api/**/*.js": {
+      "maxDuration": 30
+    },
+    "api/chat.js": {
+      "maxDuration": 60
+    },
+    "api/scraper.js": {
+      "maxDuration": 300
+    }
+  },
+  "crons": [
+    {
+      "path": "/api/scraper",
+      "schedule": "0 */6 * * *"
+    }
+  ],
   "env": {
     "NODE_ENV": "production"
-  }
+  },
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, POST, PUT, DELETE, OPTIONS"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "Content-Type, Authorization"
+        }
+      ]
+    }
+  ]
 }

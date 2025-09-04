@@ -57,7 +57,7 @@ class CommunityService {
     // Use Vercel API route in production, local API in development
     this.baseUrl = process.env.NODE_ENV === 'production' 
       ? '/api' 
-      : 'http://localhost:3001/api';
+      : '/api';
   }
 
   async fetchDiscussions(params: {
