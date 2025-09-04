@@ -49,7 +49,7 @@ const limiter = rateLimit({
 app.use(helmet());
 app.use(compression());
 app.use(cors({
-  origin: process.env.FRONTEND_URL || "http://localhost:3000",
+  origin: process.env.FRONTEND_URL || "http://localhost:3002",
   credentials: true
 }));
 app.use(express.json({ limit: '10mb' }));
@@ -128,10 +128,11 @@ app.use('*', (req, res) => {
 
 const PORT = process.env.PORT || 3001;
 
-server.listen(PORT, () => {
-  logger.info(`🚀 Backend server running on http://localhost:${PORT}`);
+server.listen(PORT, '0.0.0.0', () => {
+  logger.info(`🚀 Backend server running on http://0.0.0.0:${PORT}`);
   logger.info(`📁 Working directory: ${process.cwd()}`);
   logger.info(`🔗 Health check: http://localhost:${PORT}/health`);
+  logger.info(`🌐 Network accessible on all interfaces`);
   logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
 });
 

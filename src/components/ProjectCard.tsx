@@ -47,7 +47,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
       whileHover={{ y: -8 }}
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
-      className={`card overflow-hidden group border-2 border-gradient-to-r from-purple-500 to-blue-500 bg-gradient-to-br from-white to-gray-50 shadow-xl hover:shadow-2xl transition-all duration-300 ${featured ? 'ring-2 ring-custom-gold' : ''}`}
+      className={`card overflow-hidden group border-2 border-gradient-to-r from-purple-500 to-blue-500 bg-gradient-to-br from-white to-gray-50 shadow-xl hover:shadow-2xl transition-all duration-300 h-full flex flex-col ${featured ? 'ring-2 ring-custom-gold' : ''}`}
     >
       {/* Premium Apple Music Style Thumbnail */}
       <div className="relative overflow-hidden h-48 bg-gradient-to-br from-purple-600 via-blue-600 to-indigo-700">
@@ -154,7 +154,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
       </div>
 
       {/* Content */}
-      <div className="p-6 space-y-4">
+      <div className="p-6 space-y-4 flex-1 flex flex-col">
         <div>
           <motion.h3
             initial={{ opacity: 0 }}

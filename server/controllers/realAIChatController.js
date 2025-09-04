@@ -1,26 +1,28 @@
-const OllamaAIService = require('../services/ollamaAIService');
-const BraveSearchService = require('../services/braveSearchService');
+const aiService = require('../services/aiService');
 const ChromaMemoryService = require('../services/chromaMemoryService');
+const OpenAI = require('openai');
 
 class RealAIChatController {
   constructor() {
-    this.aiService = new OllamaAIService();
-    this.searchService = new BraveSearchService();
+    this.aiService = aiService;
     this.memoryService = new ChromaMemoryService();
+    this.openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY
+    });
     this.initializeServices();
   }
 
   async initializeServices() {
     try {
       await this.memoryService.initialize();
-      console.log('✅ Real AI Chat Controller initialized');
+      console.log('✅ Real AI Chat Controller initialized with Fine-tuned OpenAI Model');
     } catch (error) {
       console.error('❌ Failed to initialize chat controller:', error);
     }
   }
 
   async handleStreamingChat(req, res) {
-    const { message, userId } = req.body;
+    const { message, userId = 'default' } = req.body;
 
     if (!message || !message.trim()) {
       return res.status(400).json({
@@ -30,150 +32,62 @@ class RealAIChatController {
     }
 
     try {
-      // Check if AI service is online
-      const isOnline = await this.aiService.isOnline();
-      if (!isOnline) {
-        return res.status(503).json({
-          error: 'AI service is currently unavailable. Please ensure Ollama is running on localhost:11434',
-          success: false,
-          details: 'Install Ollama from https://ollama.com and run: ollama pull llama3.2:7b-instruct'
-        });
-      }
-
-      // Get conversation history
-      const recentMessages = await this.memoryService.getRecentConversation(userId, 5);
-      
-      // Check if we need current information
-      const needsSearch = this.shouldSearchWeb(message);
-      let searchResults = [];
-      let searchContext = '';
-
-      if (needsSearch) {
-        console.log(`🔍 Searching web for: ${message}`);
-        searchResults = await this.searchService.searchWeb(message, 3);
-        if (searchResults.length > 0) {
-          searchContext = searchResults.map(r => 
-            `Source: ${r.title}\nURL: ${r.url}\nInfo: ${r.snippet}\n`
-          ).join('\n');
-        }
-      }
-
-      // Get relevant memory
-      const relevantMemory = await this.memoryService.searchMemory(userId, message, 2);
-      const memoryContext = relevantMemory.join('\n');
-      
-      // Build context-aware messages
-      const systemPrompt = this.aiService.buildSystemPrompt(searchContext, memoryContext);
-      const messages = [
-        { role: 'system', content: systemPrompt },
-        ...recentMessages.map(msg => ({
-          role: msg.role,
-          content: msg.content
-        })),
-        { role: 'user', content: message }
-      ];
-
-      // Set up streaming response
-      res.writeHead(200, {
-        'Content-Type': 'text/event-stream',
-        'Cache-Control': 'no-cache',
-        'Connection': 'keep-alive',
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Content-Type, Authorization'
+      // Generate response using fine-tuned model directly
+      const response = await this.openai.chat.completions.create({
+        model: 'ft:gpt-3.5-turbo-0125:personal::CAmRK7vU',
+        messages: [
+          {
+            role: 'system',
+            content: 'You are Parth, a 19-year-old AI video creator and college student from India. You\'re friendly, mix Hindi-English naturally, and have a good sense of humor.'
+          },
+          {
+            role: 'user',
+            content: message
+          }
+        ],
+        max_tokens: 1000,
+        temperature: 0.7
       });
 
-      let fullResponse = '';
-      let isFirstChunk = true;
+      const aiResponse = response.choices[0].message.content;
 
-      // Stream the response
-      await this.aiService.generateStreamingResponse(messages, (chunk, done) => {
-        if (done) {
-          // Store conversation in memory
-          this.memoryService.addConversation(userId, message, fullResponse, {
-            searchResults: searchResults.length,
-            searchUsed: needsSearch,
-            memoryRetrieved: relevantMemory.length
-          });
+      // Store conversation in memory
+      try {
+        await this.memoryService.addConversation(userId, message, aiResponse, {
+          searchResults: 0,
+          searchUsed: false,
+          memoryRetrieved: 0
+        });
+      } catch (memoryError) {
+        console.warn('Memory storage failed:', memoryError);
+      }
 
-          res.write(`data: ${JSON.stringify({
-            content: '',
-            done: true,
-            sources: searchResults,
-            metadata: {
-              searchUsed: needsSearch,
-              memoryRetrieved: relevantMemory.length,
-              responseLength: fullResponse.length
-            }
-          })}\n\n`);
-          res.end();
-          return;
-        }
-
-        fullResponse += chunk;
-        
-        // Send chunk to client
-        res.write(`data: ${JSON.stringify({
-          content: chunk,
-          done: false,
-          sources: isFirstChunk ? searchResults : undefined
-        })}\n\n`);
-        
-        isFirstChunk = false;
+      res.status(200).json({
+        success: true,
+        response: aiResponse,
+        usage: response.usage
       });
 
     } catch (error) {
       console.error('Chat error:', error);
-      
-      if (!res.headersSent) {
-        res.status(500).json({
-          error: 'Failed to generate response',
-          success: false,
-          details: error.message
-        });
-      } else {
-        res.write(`data: ${JSON.stringify({
-          error: 'Failed to generate response',
-          details: error.message
-        })}\n\n`);
-        res.end();
-      }
+      res.status(500).json({
+        success: false,
+        error: 'Failed to generate response',
+        details: error.message
+      });
     }
-  }
-
-  shouldSearchWeb(message) {
-    const searchKeywords = [
-      'latest', 'recent', 'current', 'today', 'news', 'update', 'trending',
-      'what happened', 'new in', '2025', 'now', 'this week', 'this month',
-      'announcement', 'release', 'launch', 'update', 'version'
-    ];
-    
-    const lowerMessage = message.toLowerCase();
-    return searchKeywords.some(keyword => lowerMessage.includes(keyword));
   }
 
   async handleHealthCheck(req, res) {
     try {
-      const aiStatus = await this.aiService.isOnline();
-      const memoryStats = await this.memoryService.getMemoryStats();
-      const searchStats = await this.searchService.getUsageStats();
-
-      res.json({
-        success: true,
-        services: {
-          ai: {
-            status: aiStatus ? 'online' : 'offline',
-            model: this.aiService.defaultModel
-          },
-          memory: memoryStats,
-          search: searchStats
-        },
-        timestamp: new Date().toISOString()
+      res.status(200).json({
+        status: 'OK',
+        timestamp: new Date().toISOString(),
+        environment: process.env.NODE_ENV || 'development',
+        aiService: 'Fine-tuned OpenAI Model'
       });
     } catch (error) {
-      res.status(500).json({
-        success: false,
-        error: error.message
-      });
+      res.status(500).json({ error: error.message });
     }
   }
 
@@ -181,51 +95,35 @@ class RealAIChatController {
     try {
       const { userId } = req.params;
       const profile = await this.memoryService.getUserProfile(userId);
-      
-      res.json({
-        success: true,
-        profile
-      });
+      res.status(200).json(profile);
     } catch (error) {
-      res.status(500).json({
-        success: false,
-        error: error.message
-      });
+      res.status(500).json({ error: error.message });
     }
   }
 
   async handleMemorySearch(req, res) {
     try {
-      const { userId, query, limit = 5 } = req.query;
-      const results = await this.memoryService.searchMemory(userId, query, parseInt(limit));
-      
-      res.json({
-        success: true,
-        results
-      });
+      const { userId, query } = req.query;
+      const results = await this.memoryService.searchMemory(userId, query, 5);
+      res.status(200).json(results);
     } catch (error) {
-      res.status(500).json({
-        success: false,
-        error: error.message
-      });
+      res.status(500).json({ error: error.message });
     }
   }
 
   async handleKnowledgeBaseAdd(req, res) {
     try {
-      const { entries } = req.body;
-      const success = await this.memoryService.addKnowledgeBase(entries);
-      
-      res.json({
-        success,
-        message: success ? 'Knowledge base updated' : 'Failed to update knowledge base'
-      });
+      const { userId, content, metadata } = req.body;
+      const result = await this.memoryService.addKnowledge(userId, content, metadata);
+      res.status(200).json(result);
     } catch (error) {
-      res.status(500).json({
-        success: false,
-        error: error.message
-      });
+      res.status(500).json({ error: error.message });
     }
+  }
+
+  shouldSearchWeb(message) {
+    const searchKeywords = ['latest', 'news', 'update', 'recent', 'current', 'today', 'now'];
+    return searchKeywords.some(keyword => message.toLowerCase().includes(keyword));
   }
 }
 

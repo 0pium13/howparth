@@ -1,0 +1,7 @@
+[32minfo[39m: AI Service initialized - using per-user API keys {"service":"howparth-api","timestamp":"2025-09-02 20:40:51"}
+⚠️ Chroma memory service disabled for now
+[32minfo[39m: 🚀 Backend server running on http://localhost:3001 {"service":"howparth-api","timestamp":"2025-09-02 20:40:51"}
+[32minfo[39m: 📁 Working directory: /Users/opium/HOWPARTH/howparth {"service":"howparth-api","timestamp":"2025-09-02 20:40:51"}
+[32minfo[39m: 🔗 Health check: http://localhost:3001/health {"service":"howparth-api","timestamp":"2025-09-02 20:40:51"}
+[32minfo[39m: Environment: development {"service":"howparth-api","timestamp":"2025-09-02 20:40:51"}
+✅ Real AI Chat Controller initialized with Fine-tuned OpenAI Model

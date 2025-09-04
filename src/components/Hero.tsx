@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Brain, Zap, MessageCircle, User, ArrowRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export default function Hero() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<{ username: string } | null>(null);
   const heroRef = useRef(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Check authentication status
@@ -17,10 +19,10 @@ export default function Hero() {
   }, []);
 
   const featureIcons = [
-    { icon: Brain, label: 'AI', color: 'text-blue-400' },
-    { icon: Zap, label: 'Support', color: 'text-blue-400' },
-    { icon: MessageCircle, label: 'Chat', color: 'text-blue-400' },
-    { icon: User, label: 'Profile', color: 'text-blue-400' }
+    { icon: Brain, label: 'AI', color: 'text-blue-400', route: '/ai-portal' },
+    { icon: Zap, label: 'Support', color: 'text-blue-400', route: '/contact' },
+    { icon: MessageCircle, label: 'Chat', color: 'text-blue-400', route: '/chat' },
+    { icon: User, label: 'Profile', color: 'text-blue-400', route: isAuthenticated ? '/profile' : '/login' }
   ];
 
   const stats = [
@@ -73,9 +75,12 @@ export default function Hero() {
         >
           {featureIcons.map((feature, index) => (
             <div key={`bottom-${feature.label}`} className="flex flex-col items-center">
-              <div className="w-12 h-12 rounded-full bg-purple-900/50 border border-purple-400/30 flex items-center justify-center mb-2 hover:bg-purple-800/70 transition-colors">
+              <button
+                onClick={() => navigate(feature.route)}
+                className="w-12 h-12 rounded-full bg-purple-900/50 border border-purple-400/30 flex items-center justify-center mb-2 hover:bg-purple-800/70 transition-colors cursor-pointer"
+              >
                 <feature.icon className={`w-6 h-6 ${feature.color}`} />
-              </div>
+              </button>
               <span className="text-white text-xs md:text-sm font-medium tracking-wider text-center font-sans">{feature.label}</span>
             </div>
           ))}
@@ -86,7 +91,8 @@ export default function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.6 }}
-          className="px-8 py-4 text-white border border-white rounded-md hover:bg-white hover:text-black transition-colors flex items-center space-x-2 mb-24 font-sans text-sm tracking-wider"
+          onClick={() => navigate('/projects')}
+          className="px-8 py-4 text-white border border-white rounded-md hover:bg-white hover:text-black transition-colors flex items-center space-x-2 mb-24 font-sans text-sm tracking-wider cursor-pointer"
         >
           <span>EXPLORE MY WORK</span>
           <ArrowRight className="w-5 h-5" />

@@ -45,7 +45,8 @@ const ChatPage: React.FC = () => {
     setLastSeen('Parth is typing...');
 
     try {
-      const response = await fetch('/api/chat/stream', {
+      console.log('🔍 Sending message to backend...');
+      const response = await fetch('http://localhost:3001/api/chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -56,52 +57,29 @@ const ChatPage: React.FC = () => {
         }),
       });
 
+      console.log('📡 Response status:', response.status);
+      console.log('📡 Response ok:', response.ok);
+
       if (!response.ok) {
-        throw new Error('Failed to send message');
+        const errorText = await response.text();
+        console.error('❌ HTTP Error:', response.status, errorText);
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
 
-      const reader = response.body?.getReader();
-      if (!reader) throw new Error('No response body');
+      const data = await response.json();
+      console.log('✅ Response data:', data);
 
-      let assistantMessage = '';
-      const assistantMessageId = (Date.now() + 1).toString();
-
-      // Add initial assistant message
-      const initialAssistantMessage: Message = {
-        id: assistantMessageId,
-        content: '',
-        role: 'assistant',
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      };
-      setMessages(prev => [...prev, initialAssistantMessage]);
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        const chunk = new TextDecoder().decode(value);
-        const lines = chunk.split('\n');
-
-        for (const line of lines) {
-          if (line.startsWith('data: ')) {
-            try {
-              const data = JSON.parse(line.slice(6));
-              if (data.content) {
-                const currentAssistantMessage = assistantMessage + data.content;
-                setMessages(prev => 
-                  prev.map(msg => 
-                    msg.id === assistantMessageId 
-                      ? { ...msg, content: currentAssistantMessage }
-                      : msg
-                  )
-                );
-                assistantMessage = currentAssistantMessage;
-              }
-            } catch (e) {
-              // Ignore parsing errors
-            }
-          }
-        }
+      if (data.success && data.response) {
+        // Add assistant message
+        const assistantMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          content: data.response,
+          role: 'assistant',
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        };
+        setMessages(prev => [...prev, assistantMessage]);
+      } else {
+        throw new Error('Invalid response format from backend');
       }
 
       // Mark user message as seen

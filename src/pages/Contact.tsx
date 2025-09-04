@@ -17,16 +17,16 @@ const Contact: React.FC = () => {
     {
       icon: <Mail className="w-6 h-6" />,
       title: 'Email',
-      value: 'contact@howparth.com',
+      value: 'parthmva@gmail.com',
       description: 'Send me an email anytime',
-      action: 'mailto:contact@howparth.com',
+      action: 'mailto:parthmva@gmail.com',
     },
     {
       icon: <Phone className="w-6 h-6" />,
       title: 'Phone',
-      value: '+1 (555) 123-4567',
+      value: '+917709225795',
       description: 'Mon-Fri from 8am to 6pm',
-      action: 'tel:+15551234567',
+      action: 'tel:+917709225795',
     },
     {
       icon: <MapPin className="w-6 h-6" />,
