@@ -5,7 +5,8 @@ import { useNavigate } from 'react-router-dom';
 
 export default function Hero() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user] = useState<{ username: string } | null>(null);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [user, setUser] = useState<{ username: string } | null>(null);
   const heroRef = useRef(null);
   const navigate = useNavigate();
 

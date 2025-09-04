@@ -206,7 +206,7 @@ const AdminDashboard: React.FC = () => {
       const interval = setInterval(fetchAllData, 30000); // Every 30 seconds
       return () => clearInterval(interval);
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, fetchAllData]);
 
   const toggleDarkMode = () => setDarkMode(!darkMode);
   const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
