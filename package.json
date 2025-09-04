@@ -33,7 +33,7 @@
     "joi": "^17.9.2",
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.263.1",
-    "multer": "^1.4.5-lts.1",
+    "multer": "^2.0.0",
     "node-cron": "^3.0.2",
     "node-fetch": "^3.3.2",
     "nodemailer": "^6.10.1",
@@ -41,14 +41,16 @@
     "pdf-lib": "^1.17.1",
     "postcss": "^8.4.27",
     "prisma": "^5.3.1",
-    "puppeteer": "^21.3.6",
+    "puppeteer": "^24.0.0",
     "qrcode": "^1.5.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.3.0",
     "react-scripts": "5.0.1",
+    "rimraf": "^4.0.0",
     "rss-parser": "^3.13.0",
     "sharp": "^0.32.5",
+    "svgo": "^2.0.0",
     "socket.io": "^4.7.2",
     "socket.io-client": "^4.7.2",
     "speakeasy": "^2.0.0",
@@ -102,7 +104,7 @@
     "@types/express": "^4.17.17",
     "@types/jest": "^30.0.0",
     "@types/jsonwebtoken": "^9.0.2",
-    "@types/multer": "^1.4.7",
+    "@types/multer": "^1.4.11",
     "@types/node-cron": "^3.0.7",
     "@types/nodemailer": "^6.4.9",
     "@types/supertest": "^6.0.3",
@@ -111,5 +113,11 @@
     "jest": "^27.5.1",
     "nodemon": "^3.1.10",
     "supertest": "^7.1.4"
+  },
+  "resolutions": {
+    "svgo": "^2.0.0",
+    "puppeteer": "^24.0.0",
+    "multer": "^2.0.0",
+    "rimraf": "^4.0.0"
   }
 }
