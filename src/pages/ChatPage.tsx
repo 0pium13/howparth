@@ -46,7 +46,7 @@ const ChatPage: React.FC = () => {
 
     try {
       console.log('🔍 Sending message to backend...');
-      const response = await fetch('http://localhost:3001/api/chat', {
+      const response = await fetch('http://localhost:3002/api/chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

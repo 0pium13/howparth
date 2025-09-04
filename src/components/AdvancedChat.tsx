@@ -351,12 +351,12 @@ From my experience with 50+ AI tools, I've found that the best approach is often
       const errorMessage: Message = {
         id: `msg_${Date.now() + 1}`,
         role: 'assistant',
-        content: `I apologize, but I'm having trouble connecting to my AI services right now. This might be because Ollama isn't running locally. 
+        content: `I apologize, but I'm having trouble connecting to my AI services right now. This might be due to a temporary API issue.
 
-To use the full AI features:
-1. Install Ollama from https://ollama.com
-2. Run: \`ollama pull llama3.2:7b-instruct\`
-3. Start Ollama: \`ollama serve\`
+To fix this:
+1. Check your internet connection
+2. Verify your OpenAI API key is valid
+3. Try refreshing the page
 
 For now, I can still help with general questions about AI and HOWPARTH!`,
         timestamp: new Date(),

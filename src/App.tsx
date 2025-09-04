@@ -7,7 +7,6 @@ import Hero from './components/Hero';
 import AnimatedSection from './components/AnimatedSection';
 import OutlineTextSection from './components/OutlineTextSection';
 import ProcessSection from './components/ProcessSection';
-import HomepageNav from './components/HomepageNav';
 import Contact from './pages/Contact';
 import LoginPage from './pages/LoginPage';
 import SignUpPage from './pages/SignUpPage';
@@ -15,6 +14,7 @@ import AIPortal from './pages/AIPortal';
 // import AdvancedChat from './components/AdvancedChat';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
+import { AdminAuthProvider } from './contexts/AdminAuthContext';
 import { ToastManager, useToast } from './components/Toast';
 import { WelcomeToast } from './components/WelcomeToast';
 // import { serviceWorkerManager } from './utils/serviceWorker';
@@ -27,6 +27,7 @@ const Projects = lazy(() => import('./pages/Projects'));
 const CommunityHub = lazy(() => import('./pages/CommunityHub'));
 const ChatPage = lazy(() => import('./pages/ChatPage'));
 const AIContentPortal = lazy(() => import('./pages/AIContentPortal'));
+const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
 
 // Loading component for Suspense fallback
 const LoadingSpinner = () => (
@@ -151,6 +152,17 @@ function AppContent() {
                   <Suspense fallback={<LoadingSpinner />}>
                     <ChatPage />
                   </Suspense>
+                </ErrorBoundary>
+              } />
+              
+              {/* Admin Dashboard Route */}
+              <Route path="/admin" element={
+                <ErrorBoundary>
+                  <AdminAuthProvider>
+                    <Suspense fallback={<LoadingSpinner />}>
+                      <AdminDashboard />
+                    </Suspense>
+                  </AdminAuthProvider>
                 </ErrorBoundary>
               } />
               

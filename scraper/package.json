@@ -1,0 +1,38 @@
+{
+  "name": "ai-community-scraper",
+  "version": "1.0.0",
+  "description": "Powerful web scraping system for AI community insights",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "scrape": "node index.js scrape once",
+    "dashboard": "node index.js dashboard",
+    "schedule": "node index.js schedule start",
+    "test": "node index.js test",
+    "setup": "node setup.js",
+    "dev": "nodemon index.js"
+  },
+  "dependencies": {
+    "puppeteer": "^21.5.2",
+    "playwright": "^1.40.0",
+    "cheerio": "^1.0.0-rc.12",
+    "axios": "^1.6.2",
+    "sqlite3": "^5.1.6",
+    "node-cron": "^3.0.3",
+    "express": "^4.18.2",
+    "socket.io": "^4.7.4",
+    "winston": "^3.11.0",
+    "user-agents": "^1.0.1374",
+    "proxy-agent": "^6.3.1",
+    "fs-extra": "^11.1.1",
+    "moment": "^2.29.4",
+    "sentiment": "^5.0.2",
+    "natural": "^6.7.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  },
+  "keywords": ["web-scraping", "reddit", "ai", "automation", "data-mining"],
+  "author": "Parth",
+  "license": "MIT"
+}

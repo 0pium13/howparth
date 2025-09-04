@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import FloatingEmojis from '../components/FloatingEmojis';
-import { Search, Grid, List, ArrowLeft, Sparkles, Clock, Play, X, Volume2, VolumeX, Maximize, RotateCcw } from 'lucide-react';
+import { Search, Grid, List, ArrowLeft, Sparkles, Clock, Play, X } from 'lucide-react';
 
 const Projects: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');

@@ -183,3 +183,88 @@
 {"level":"info","message":"📁 Working directory: /Users/opium/HOWPARTH/howparth","service":"howparth-api","timestamp":"2025-09-02 20:40:51"}
 {"level":"info","message":"🔗 Health check: http://localhost:3001/health","service":"howparth-api","timestamp":"2025-09-02 20:40:51"}
 {"level":"info","message":"Environment: development","service":"howparth-api","timestamp":"2025-09-02 20:40:51"}
+{"level":"info","message":"AI Service initialized - using per-user API keys","service":"howparth-api","timestamp":"2025-09-04 23:38:39"}
+{"level":"info","message":"Enhanced AI Service initialized with robust error handling","service":"howparth-api","timestamp":"2025-09-04 23:38:39"}
+{"level":"info","message":"🚀 Backend server running on http://0.0.0.0:3002","service":"howparth-api","timestamp":"2025-09-04 23:38:39"}
+{"level":"info","message":"📁 Working directory: /Users/opium/HOWPARTH/howparth","service":"howparth-api","timestamp":"2025-09-04 23:38:39"}
+{"level":"info","message":"🔗 Health check: http://localhost:3002/health","service":"howparth-api","timestamp":"2025-09-04 23:38:39"}
+{"level":"info","message":"🌐 Network accessible on all interfaces","service":"howparth-api","timestamp":"2025-09-04 23:38:39"}
+{"level":"info","message":"Environment: development","service":"howparth-api","timestamp":"2025-09-04 23:38:39"}
+{"level":"info","message":"✅ Enhanced Chat Controller initialized with robust error handling","service":"howparth-api","timestamp":"2025-09-04 23:38:39"}
+{"level":"info","message":"AI Service initialized - using per-user API keys","service":"howparth-api","timestamp":"2025-09-05 01:40:43"}
+{"level":"info","message":"Enhanced AI Service initialized with robust error handling","service":"howparth-api","timestamp":"2025-09-05 01:40:43"}
+{"level":"info","message":"🚀 Backend server running on http://0.0.0.0:3001","service":"howparth-api","timestamp":"2025-09-05 01:40:43"}
+{"level":"info","message":"📁 Working directory: /Users/opium/HOWPARTH/howparth","service":"howparth-api","timestamp":"2025-09-05 01:40:43"}
+{"level":"info","message":"🔗 Health check: http://localhost:3001/health","service":"howparth-api","timestamp":"2025-09-05 01:40:43"}
+{"level":"info","message":"🌐 Network accessible on all interfaces","service":"howparth-api","timestamp":"2025-09-05 01:40:43"}
+{"level":"info","message":"Environment: development","service":"howparth-api","timestamp":"2025-09-05 01:40:43"}
+{"level":"info","message":"✅ Enhanced Chat Controller initialized with robust error handling","service":"howparth-api","timestamp":"2025-09-05 01:40:43"}
+{"level":"info","message":"AI Service initialized - using per-user API keys","service":"howparth-api","timestamp":"2025-09-05 02:37:37"}
+{"level":"info","message":"Enhanced AI Service initialized with robust error handling","service":"howparth-api","timestamp":"2025-09-05 02:37:37"}
+{"level":"info","message":"🚀 Backend server running on http://0.0.0.0:3001","service":"howparth-api","timestamp":"2025-09-05 02:37:37"}
+{"level":"info","message":"📁 Working directory: /Users/opium/HOWPARTH/howparth","service":"howparth-api","timestamp":"2025-09-05 02:37:37"}
+{"level":"info","message":"🔗 Health check: http://localhost:3001/health","service":"howparth-api","timestamp":"2025-09-05 02:37:37"}
+{"level":"info","message":"🌐 Network accessible on all interfaces","service":"howparth-api","timestamp":"2025-09-05 02:37:37"}
+{"level":"info","message":"Environment: development","service":"howparth-api","timestamp":"2025-09-05 02:37:37"}
+{"level":"info","message":"✅ Enhanced Chat Controller initialized with robust error handling","service":"howparth-api","timestamp":"2025-09-05 02:37:37"}
+{"level":"info","message":"AI Service initialized - using per-user API keys","service":"howparth-api","timestamp":"2025-09-05 03:05:36"}
+{"level":"info","message":"Enhanced AI Service initialized with robust error handling","service":"howparth-api","timestamp":"2025-09-05 03:05:36"}
+{"level":"info","message":"🚀 Backend server running on http://0.0.0.0:3001","service":"howparth-api","timestamp":"2025-09-05 03:05:36"}
+{"level":"info","message":"📁 Working directory: /Users/opium/HOWPARTH/howparth","service":"howparth-api","timestamp":"2025-09-05 03:05:36"}
+{"level":"info","message":"🔗 Health check: http://localhost:3001/health","service":"howparth-api","timestamp":"2025-09-05 03:05:36"}
+{"level":"info","message":"🌐 Network accessible on all interfaces","service":"howparth-api","timestamp":"2025-09-05 03:05:36"}
+{"level":"info","message":"Environment: development","service":"howparth-api","timestamp":"2025-09-05 03:05:36"}
+{"level":"info","message":"✅ Enhanced Chat Controller initialized with robust error handling","service":"howparth-api","timestamp":"2025-09-05 03:05:36"}
+{"level":"info","message":"AI Service initialized - using per-user API keys","service":"howparth-api","timestamp":"2025-09-05 03:15:20"}
+{"level":"info","message":"Enhanced AI Service initialized with robust error handling","service":"howparth-api","timestamp":"2025-09-05 03:15:20"}
+{"level":"info","message":"🚀 Backend server running on http://0.0.0.0:3001","service":"howparth-api","timestamp":"2025-09-05 03:15:20"}
+{"level":"info","message":"📁 Working directory: /Users/opium/HOWPARTH/howparth","service":"howparth-api","timestamp":"2025-09-05 03:15:20"}
+{"level":"info","message":"🔗 Health check: http://localhost:3001/health","service":"howparth-api","timestamp":"2025-09-05 03:15:20"}
+{"level":"info","message":"🌐 Network accessible on all interfaces","service":"howparth-api","timestamp":"2025-09-05 03:15:20"}
+{"level":"info","message":"Environment: development","service":"howparth-api","timestamp":"2025-09-05 03:15:20"}
+{"level":"info","message":"✅ Enhanced Chat Controller initialized with robust error handling","service":"howparth-api","timestamp":"2025-09-05 03:15:20"}
+{"level":"info","message":"AI Service initialized - using per-user API keys","service":"howparth-api","timestamp":"2025-09-05 03:19:56"}
+{"level":"info","message":"Enhanced AI Service initialized with robust error handling","service":"howparth-api","timestamp":"2025-09-05 03:19:56"}
+{"level":"info","message":"🚀 Backend server running on http://0.0.0.0:3001","service":"howparth-api","timestamp":"2025-09-05 03:19:56"}
+{"level":"info","message":"📁 Working directory: /Users/opium/HOWPARTH/howparth","service":"howparth-api","timestamp":"2025-09-05 03:19:56"}
+{"level":"info","message":"🔗 Health check: http://localhost:3001/health","service":"howparth-api","timestamp":"2025-09-05 03:19:56"}
+{"level":"info","message":"🌐 Network accessible on all interfaces","service":"howparth-api","timestamp":"2025-09-05 03:19:56"}
+{"level":"info","message":"Environment: development","service":"howparth-api","timestamp":"2025-09-05 03:19:56"}
+{"level":"info","message":"✅ Enhanced Chat Controller initialized with robust error handling","service":"howparth-api","timestamp":"2025-09-05 03:19:56"}
+{"level":"info","message":"AI Service initialized - using per-user API keys","service":"howparth-api","timestamp":"2025-09-05 03:25:01"}
+{"level":"info","message":"Enhanced AI Service initialized with robust error handling","service":"howparth-api","timestamp":"2025-09-05 03:25:01"}
+{"level":"info","message":"🚀 Backend server running on http://0.0.0.0:3001","service":"howparth-api","timestamp":"2025-09-05 03:25:01"}
+{"level":"info","message":"📁 Working directory: /Users/opium/HOWPARTH/howparth","service":"howparth-api","timestamp":"2025-09-05 03:25:01"}
+{"level":"info","message":"🔗 Health check: http://localhost:3001/health","service":"howparth-api","timestamp":"2025-09-05 03:25:01"}
+{"level":"info","message":"🌐 Network accessible on all interfaces","service":"howparth-api","timestamp":"2025-09-05 03:25:01"}
+{"level":"info","message":"Environment: development","service":"howparth-api","timestamp":"2025-09-05 03:25:01"}
+{"level":"info","message":"✅ Enhanced Chat Controller initialized with robust error handling","service":"howparth-api","timestamp":"2025-09-05 03:25:01"}
+{"level":"info","message":"Attempt 1: Using model ft:gpt-3.5-turbo-0125:personal::CAmRK7vU for user test","service":"howparth-api","timestamp":"2025-09-05 03:26:25"}
+{"level":"warn","message":"❌ Attempt 1 failed with model ft:gpt-3.5-turbo-0125:personal::CAmRK7vU:","service":"howparth-api","timestamp":"2025-09-05 03:26:26"}
+{"level":"info","message":"Attempt 1: Using model gpt-3.5-turbo for user test","service":"howparth-api","timestamp":"2025-09-05 03:26:27"}
+{"level":"warn","message":"❌ Attempt 1 failed with model gpt-3.5-turbo:","service":"howparth-api","timestamp":"2025-09-05 03:26:28"}
+{"level":"info","message":"Attempt 2: Using model ft:gpt-3.5-turbo-0125:personal::CAmRK7vU for user test","service":"howparth-api","timestamp":"2025-09-05 03:26:29"}
+{"level":"warn","message":"❌ Attempt 2 failed with model ft:gpt-3.5-turbo-0125:personal::CAmRK7vU:","service":"howparth-api","timestamp":"2025-09-05 03:26:29"}
+{"level":"info","message":"Attempt 2: Using model gpt-3.5-turbo for user test","service":"howparth-api","timestamp":"2025-09-05 03:26:31"}
+{"level":"warn","message":"❌ Attempt 2 failed with model gpt-3.5-turbo:","service":"howparth-api","timestamp":"2025-09-05 03:26:34"}
+{"level":"info","message":"Attempt 3: Using model ft:gpt-3.5-turbo-0125:personal::CAmRK7vU for user test","service":"howparth-api","timestamp":"2025-09-05 03:26:36"}
+{"level":"warn","message":"❌ Attempt 3 failed with model ft:gpt-3.5-turbo-0125:personal::CAmRK7vU:","service":"howparth-api","timestamp":"2025-09-05 03:26:39"}
+{"level":"info","message":"Attempt 3: Using model gpt-3.5-turbo for user test","service":"howparth-api","timestamp":"2025-09-05 03:26:39"}
+{"level":"warn","message":"❌ Attempt 3 failed with model gpt-3.5-turbo:","service":"howparth-api","timestamp":"2025-09-05 03:26:39"}
+{"code":null,"error":{"code":null,"message":"Unrecognized request argument supplied: timeout","param":null,"type":"invalid_request_error"},"headers":{"access-control-expose-headers":"X-Request-ID","alt-svc":"h3=\":443\"; ma=86400","cf-cache-status":"DYNAMIC","cf-ray":"97a0bcf03f8146ec-BOM","connection":"keep-alive","content-length":"159","content-type":"application/json","date":"Thu, 04 Sep 2025 21:56:39 GMT","openai-organization":"personal-4xchng","openai-processing-ms":"23","openai-project":"proj_NKKggT0YxOEgeeHcFlMwC6aS","openai-version":"2020-10-01","server":"cloudflare","set-cookie":"__cf_bm=ZsaucIK24DIfRHlIhDrJ0zN0RGyec.AmDD143QPJlsQ-1757022999-1.0.1.1-O1NcnbZH1UDFWiODqsTOgF02jq2aQZ.4WUKZg.oLNDOQBwjA84JGXCUcEb8Hi.wC1qXxDO6LBJlzjs5lKeu3W0PpuWxWorP9rNqXZ8m_XYI; path=/; expires=Thu, 04-Sep-25 22:26:39 GMT; domain=.api.openai.com; HttpOnly; Secure; SameSite=None, _cfuvid=DMr_Y6xbSo38m4EJjxKjSi27pHCp6Z0Mom.d4VFUpEE-1757022999424-0.0.1.1-604800000; path=/; domain=.api.openai.com; HttpOnly; Secure; SameSite=None","strict-transport-security":"max-age=31536000; includeSubDomains; preload","x-content-type-options":"nosniff","x-envoy-upstream-service-time":"30","x-ratelimit-limit-requests":"10000","x-ratelimit-limit-tokens":"200000","x-ratelimit-remaining-requests":"9998","x-ratelimit-remaining-tokens":"199948","x-ratelimit-reset-requests":"14.525s","x-ratelimit-reset-tokens":"15ms","x-request-id":"req_2f5b312725ce466793ac2a9ea638f492"},"level":"error","message":"❌ All attempts failed for user test: 400 Unrecognized request argument supplied: timeout","param":null,"request_id":"req_2f5b312725ce466793ac2a9ea638f492","service":"howparth-api","stack":"Error: 400 Unrecognized request argument supplied: timeout\n    at APIError.generate (/Users/opium/HOWPARTH/howparth/node_modules/openai/error.js:45:20)\n    at OpenAI.makeStatusError (/Users/opium/HOWPARTH/howparth/node_modules/openai/core.js:302:33)\n    at OpenAI.makeRequest (/Users/opium/HOWPARTH/howparth/node_modules/openai/core.js:346:30)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async EnhancedAIService.generateChatResponse (/Users/opium/HOWPARTH/howparth/server/services/enhancedAIService.js:134:28)\n    at async EnhancedChatController.handleChat (/Users/opium/HOWPARTH/howparth/server/controllers/enhancedChatController.js:66:26)\n    at async /Users/opium/HOWPARTH/howparth/server/routes/chat.js:14:3","status":400,"timestamp":"2025-09-05 03:26:39","type":"invalid_request_error"}
+{"level":"error","message":"❌ Chat request failed for user test: Failed to generate response after multiple attempts","service":"howparth-api","stack":"Error: Failed to generate response after multiple attempts\n    at EnhancedChatController.handleChat (/Users/opium/HOWPARTH/howparth/server/controllers/enhancedChatController.js:74:15)\n    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n    at async /Users/opium/HOWPARTH/howparth/server/routes/chat.js:14:3","timestamp":"2025-09-05 03:26:39"}
+{"level":"info","message":"SIGTERM received, shutting down gracefully","service":"howparth-api","timestamp":"2025-09-05 03:29:27"}
+{"level":"info","message":"AI Service initialized - using per-user API keys","service":"howparth-api","timestamp":"2025-09-05 03:33:00"}
+{"level":"info","message":"Enhanced AI Service initialized with robust error handling","service":"howparth-api","timestamp":"2025-09-05 03:33:00"}
+{"level":"info","message":"🚀 Backend server running on http://0.0.0.0:3001","service":"howparth-api","timestamp":"2025-09-05 03:33:00"}
+{"level":"info","message":"📁 Working directory: /Users/opium/HOWPARTH/howparth","service":"howparth-api","timestamp":"2025-09-05 03:33:00"}
+{"level":"info","message":"🔗 Health check: http://localhost:3001/health","service":"howparth-api","timestamp":"2025-09-05 03:33:00"}
+{"level":"info","message":"🌐 Network accessible on all interfaces","service":"howparth-api","timestamp":"2025-09-05 03:33:00"}
+{"level":"info","message":"Environment: development","service":"howparth-api","timestamp":"2025-09-05 03:33:00"}
+{"level":"info","message":"✅ Enhanced Chat Controller initialized with robust error handling","service":"howparth-api","timestamp":"2025-09-05 03:33:00"}
+{"level":"info","message":"Attempt 1: Using model ft:gpt-3.5-turbo-0125:personal::CAmRK7vU for user test","service":"howparth-api","timestamp":"2025-09-05 03:34:58"}
+{"level":"info","message":"✅ Success: Generated response in 1403ms using ft:gpt-3.5-turbo-0125:personal::CAmRK7vU","service":"howparth-api","timestamp":"2025-09-05 03:35:00"}
+{"level":"info","message":"✅ Chat request successful for user test in 1404ms","service":"howparth-api","timestamp":"2025-09-05 03:35:00"}
+{"level":"info","message":"Attempt 1: Using model ft:gpt-3.5-turbo-0125:personal::CAmRK7vU for user final-test","service":"howparth-api","timestamp":"2025-09-05 03:43:38"}
+{"level":"info","message":"✅ Success: Generated response in 973ms using ft:gpt-3.5-turbo-0125:personal::CAmRK7vU","service":"howparth-api","timestamp":"2025-09-05 03:43:39"}
+{"level":"info","message":"✅ Chat request successful for user final-test in 973ms","service":"howparth-api","timestamp":"2025-09-05 03:43:39"}

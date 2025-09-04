@@ -2,11 +2,11 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: #0B0B0D;
+  background: #000000;
 }
 
 body {
-  background: #0B0B0D;
+  background: #000000;
   color: #E6E8EF;
 }
 
@@ -20,16 +20,16 @@ main {
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: #1a1a1a;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: #404040;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: #606060;
 }
 
 /* Smooth scrolling for anchor links */
@@ -80,7 +80,7 @@ html {
 /* Enhanced Color System */
 :root {
   /* Base colors */
-  --color-black: #0B0B0D;
+  --color-black: #000000;
   
   /* Typography enhancements */
   --text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);

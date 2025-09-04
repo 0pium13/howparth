@@ -28,6 +28,7 @@ const aiToolsRoutes = require('./routes/aiTools');
 const consultationRoutes = require('./routes/consultation');
 const analyticsRoutes = require('./routes/analytics');
 const adminRoutes = require('./routes/admin');
+const monitoringRoutes = require('./routes/monitoring');
 const userRoutes = require('./routes/user');
 const apiKeyRoutes = require('./routes/apiKeys');
 
@@ -88,6 +89,7 @@ app.use('/api/analytics', analyticsRoutes);
 app.use('/api/admin', authenticateToken, adminRoutes);
 app.use('/api/user', authenticateToken, userRoutes);
 app.use('/api/keys', apiKeyRoutes);
+app.use('/api/monitoring', monitoringRoutes);
 
 // Socket.IO connection handling
 io.on('connection', (socket) => {
@@ -126,7 +128,7 @@ app.use('*', (req, res) => {
   });
 });
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3002;
 
 server.listen(PORT, '0.0.0.0', () => {
   logger.info(`🚀 Backend server running on http://0.0.0.0:${PORT}`);

@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 
 export default function Hero() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [user, setUser] = useState<{ username: string } | null>(null);
+  const [user] = useState<{ username: string } | null>(null);
   const heroRef = useRef(null);
   const navigate = useNavigate();
 
@@ -20,8 +20,8 @@ export default function Hero() {
 
   const featureIcons = [
     { icon: Brain, label: 'AI', color: 'text-blue-400', route: '/ai-portal' },
+    { icon: MessageCircle, label: 'Community', color: 'text-purple-400', route: '/community' },
     { icon: Zap, label: 'Support', color: 'text-blue-400', route: '/contact' },
-    { icon: MessageCircle, label: 'Chat', color: 'text-blue-400', route: '/chat' },
     { icon: User, label: 'Profile', color: 'text-blue-400', route: isAuthenticated ? '/profile' : '/login' }
   ];
 

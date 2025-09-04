@@ -1,12 +1,17 @@
 const express = require('express');
-const RealAIChatController = require('../controllers/realAIChatController');
+const EnhancedChatController = require('../controllers/enhancedChatController');
 const router = express.Router();
 
-const chatController = new RealAIChatController();
+const chatController = new EnhancedChatController();
 
-// Real AI streaming chat endpoint
+// Enhanced chat endpoint with robust error handling
 router.post('/stream', async (req, res) => {
   await chatController.handleStreamingChat(req, res);
+});
+
+// Enhanced chat endpoint (non-streaming)
+router.post('/', async (req, res) => {
+  await chatController.handleChat(req, res);
 });
 
 // Health check endpoint
@@ -29,10 +34,9 @@ router.post('/knowledge', async (req, res) => {
   await chatController.handleKnowledgeBaseAdd(req, res);
 });
 
-// Legacy chat endpoint (fallback)
-router.post('/', async (req, res) => {
-  // Redirect to streaming endpoint
-  await chatController.handleStreamingChat(req, res);
+// Status dashboard endpoint
+router.get('/status', async (req, res) => {
+  await chatController.handleStatusDashboard(req, res);
 });
 
 module.exports = router;

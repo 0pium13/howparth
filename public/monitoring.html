@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Chat System Monitor - HOWPARTH</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #000000;
+            color: #ffffff;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .header p {
+            color: #888;
+            font-size: 1.1rem;
+        }
+        
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .status-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+        }
+        
+        .status-card h3 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        .status-healthy {
+            background: #10b981;
+        }
+        
+        .status-warning {
+            background: #f59e0b;
+        }
+        
+        .status-error {
+            background: #ef4444;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .metric:last-child {
+            border-bottom: none;
+        }
+        
+        .metric-label {
+            color: #ccc;
+        }
+        
+        .metric-value {
+            font-weight: 600;
+            color: #fff;
+        }
+        
+        .chart-container {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .chart-title {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .error-log {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 2rem;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .error-item {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .error-time {
+            color: #888;
+            font-size: 0.9rem;
+        }
+        
+        .error-message {
+            color: #ef4444;
+            margin-top: 0.5rem;
+        }
+        
+        .refresh-btn {
+            background: linear-gradient(135deg, #7c3aed, #a855f7);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-bottom: 2rem;
+        }
+        
+        .refresh-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(124, 58, 237, 0.3);
+        }
+        
+        .auto-refresh {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .auto-refresh input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+        }
+        
+        .last-updated {
+            color: #888;
+            font-size: 0.9rem;
+            text-align: center;
+            margin-top: 2rem;
+        }
+        
+        .loading {
+            text-align: center;
+            color: #888;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 AI Chat System Monitor</h1>
+            <p>Real-time monitoring for HOWPARTH's fine-tuned OpenAI model</p>
+        </div>
+        
+        <div class="auto-refresh">
+            <input type="checkbox" id="autoRefresh" checked>
+            <label for="autoRefresh">Auto-refresh every 30 seconds</label>
+        </div>
+        
+        <button class="refresh-btn" onclick="refreshData()">🔄 Refresh Now</button>
+        
+        <div class="status-grid">
+            <div class="status-card">
+                <h3>
+                    <span class="status-indicator" id="aiStatus"></span>
+                    AI Service Status
+                </h3>
+                <div class="metric">
+                    <span class="metric-label">Status:</span>
+                    <span class="metric-value" id="aiStatusText">Loading...</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Response Time:</span>
+                    <span class="metric-value" id="responseTime">-</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Model:</span>
+                    <span class="metric-value" id="currentModel">-</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Last Check:</span>
+                    <span class="metric-value" id="lastCheck">-</span>
+                </div>
+            </div>
+            
+            <div class="status-card">
+                <h3>
+                    <span class="status-indicator" id="requestStatus"></span>
+                    Request Statistics
+                </h3>
+                <div class="metric">
+                    <span class="metric-label">Total Requests:</span>
+                    <span class="metric-value" id="totalRequests">-</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Success Rate:</span>
+                    <span class="metric-value" id="successRate">-</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Avg Response Time:</span>
+                    <span class="metric-value" id="avgResponseTime">-</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Consecutive Failures:</span>
+                    <span class="metric-value" id="consecutiveFailures">-</span>
+                </div>
+            </div>
+            
+            <div class="status-card">
+                <h3>
+                    <span class="status-indicator" id="systemStatus"></span>
+                    System Health
+                </h3>
+                <div class="metric">
+                    <span class="metric-label">Uptime:</span>
+                    <span class="metric-value" id="uptime">-</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Memory Usage:</span>
+                    <span class="metric-value" id="memoryUsage">-</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Node Version:</span>
+                    <span class="metric-value" id="nodeVersion">-</span>
+                </div>
+                <div class="metric">
+                    <span class="metric-label">Environment:</span>
+                    <span class="metric-value" id="environment">-</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="chart-container">
+            <h3 class="chart-title">Recent Error Log</h3>
+            <div class="error-log" id="errorLog">
+                <div class="loading">Loading error log...</div>
+            </div>
+        </div>
+        
+        <div class="last-updated" id="lastUpdated">
+            Last updated: Never
+        </div>
+    </div>
+
+    <script>
+        let autoRefreshInterval;
+        
+        function formatBytes(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+        
+        function formatUptime(seconds) {
+            const days = Math.floor(seconds / 86400);
+            const hours = Math.floor((seconds % 86400) / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            return `${days}d ${hours}h ${minutes}m`;
+        }
+        
+        function updateStatusIndicator(elementId, status) {
+            const indicator = document.getElementById(elementId);
+            indicator.className = 'status-indicator';
+            
+            if (status === 'healthy') {
+                indicator.classList.add('status-healthy');
+            } else if (status === 'warning') {
+                indicator.classList.add('status-warning');
+            } else {
+                indicator.classList.add('status-error');
+            }
+        }
+        
+        async function fetchStatus() {
+            try {
+                const response = await fetch('/api/monitoring/status');
+                const data = await response.json();
+                
+                // Update AI Status
+                const aiHealthy = data.ai.health.isHealthy;
+                updateStatusIndicator('aiStatus', aiHealthy ? 'healthy' : 'error');
+                document.getElementById('aiStatusText').textContent = aiHealthy ? 'Healthy' : 'Unhealthy';
+                document.getElementById('responseTime').textContent = data.ai.health.averageResponseTime ? 
+                    `${Math.round(data.ai.health.averageResponseTime)}ms` : '-';
+                document.getElementById('currentModel').textContent = data.ai.models.fineTuned.split(':')[0];
+                document.getElementById('lastCheck').textContent = new Date(data.ai.health.lastCheck).toLocaleTimeString();
+                
+                // Update Request Statistics
+                const successRate = data.ai.health.successRate;
+                updateStatusIndicator('requestStatus', successRate > 90 ? 'healthy' : successRate > 70 ? 'warning' : 'error');
+                document.getElementById('totalRequests').textContent = data.ai.health.totalRequests || 0;
+                document.getElementById('successRate').textContent = successRate ? `${successRate}%` : '-';
+                document.getElementById('avgResponseTime').textContent = data.ai.health.averageResponseTime ? 
+                    `${Math.round(data.ai.health.averageResponseTime)}ms` : '-';
+                document.getElementById('consecutiveFailures').textContent = data.ai.health.consecutiveFailures || 0;
+                
+                // Update System Health
+                updateStatusIndicator('systemStatus', 'healthy');
+                document.getElementById('uptime').textContent = formatUptime(data.system.uptime);
+                document.getElementById('memoryUsage').textContent = formatBytes(data.system.memory.heapUsed);
+                document.getElementById('nodeVersion').textContent = data.system.nodeVersion;
+                document.getElementById('environment').textContent = data.system.environment;
+                
+                // Update last updated time
+                document.getElementById('lastUpdated').textContent = `Last updated: ${new Date().toLocaleTimeString()}`;
+                
+            } catch (error) {
+                console.error('Failed to fetch status:', error);
+                updateStatusIndicator('aiStatus', 'error');
+                updateStatusIndicator('requestStatus', 'error');
+                updateStatusIndicator('systemStatus', 'error');
+            }
+        }
+        
+        async function fetchErrorLog() {
+            try {
+                const response = await fetch('/api/monitoring/errors');
+                const data = await response.json();
+                
+                const errorLog = document.getElementById('errorLog');
+                
+                if (data.errors && data.errors.length > 0) {
+                    errorLog.innerHTML = data.errors.map(error => `
+                        <div class="error-item">
+                            <div class="error-time">${new Date(error.timestamp).toLocaleString()}</div>
+                            <div class="error-message">${error.error}</div>
+                        </div>
+                    `).join('');
+                } else {
+                    errorLog.innerHTML = '<div class="loading">No recent errors</div>';
+                }
+            } catch (error) {
+                console.error('Failed to fetch error log:', error);
+                document.getElementById('errorLog').innerHTML = '<div class="loading">Failed to load error log</div>';
+            }
+        }
+        
+        async function refreshData() {
+            await Promise.all([fetchStatus(), fetchErrorLog()]);
+        }
+        
+        function startAutoRefresh() {
+            if (autoRefreshInterval) {
+                clearInterval(autoRefreshInterval);
+            }
+            
+            autoRefreshInterval = setInterval(refreshData, 30000); // 30 seconds
+        }
+        
+        function stopAutoRefresh() {
+            if (autoRefreshInterval) {
+                clearInterval(autoRefreshInterval);
+                autoRefreshInterval = null;
+            }
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            refreshData();
+            startAutoRefresh();
+            
+            // Handle auto-refresh checkbox
+            document.getElementById('autoRefresh').addEventListener('change', function(e) {
+                if (e.target.checked) {
+                    startAutoRefresh();
+                } else {
+                    stopAutoRefresh();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
