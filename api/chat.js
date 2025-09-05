@@ -3,12 +3,21 @@ const OpenAI = require('openai');
 // Initialize OpenAI with environment variables
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
-  timeout: 30000,
+  timeout: 25000, // Reduced for Vercel
   maxRetries: 3
 });
 
 const FINE_TUNED_MODEL = process.env.FINE_TUNED_MODEL_ID || 'ft:gpt-3.5-turbo-0125:personal::CAmRK7vU';
 const FALLBACK_MODEL = 'gpt-3.5-turbo';
+
+// Security headers
+const securityHeaders = {
+  'X-DNS-Prefetch-Control': 'on',
+  'Strict-Transport-Security': 'max-age=63072000; includeSubDomains; preload',
+  'X-XSS-Protection': '1; mode=block',
+  'X-Frame-Options': 'SAMEORIGIN',
+  'X-Content-Type-Options': 'nosniff'
+};
 
 // Simple in-memory cache for health checks (resets on function cold start)
 let healthCache = {
@@ -20,10 +29,16 @@ let healthCache = {
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 module.exports = async (req, res) => {
+  // Set security headers
+  Object.entries(securityHeaders).forEach(([key, value]) => {
+    res.setHeader(key, value);
+  });
+
   // Enable CORS for all origins
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
+  res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization');
 
   // Handle preflight OPTIONS request
   if (req.method === 'OPTIONS') {

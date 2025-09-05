@@ -11,14 +11,13 @@ import Contact from './pages/Contact';
 import LoginPage from './pages/LoginPage';
 import SignUpPage from './pages/SignUpPage';
 import AIPortal from './pages/AIPortal';
-// import AdvancedChat from './components/AdvancedChat';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { AdminAuthProvider } from './contexts/AdminAuthContext';
 import { ToastManager, useToast } from './components/Toast';
 import { WelcomeToast } from './components/WelcomeToast';
-// import { serviceWorkerManager } from './utils/serviceWorker';
-// import { performanceMonitor } from './utils/performanceMonitor';
+// import { initAnalytics, trackRouteChange } from './utils/analytics';
+// import { initPerformanceMonitoring } from './utils/performance';
 import './App.css';
 
 // Lazy load heavy components for better performance
@@ -41,6 +40,17 @@ function AppContent() {
   const [showWelcomeToast, setShowWelcomeToast] = useState(false);
   const [welcomeUsername, setWelcomeUsername] = useState('');
   const { user, isAuthenticated } = useAuth();
+
+  // Initialize analytics and performance monitoring
+  useEffect(() => {
+    // initAnalytics();
+    // initPerformanceMonitoring();
+  }, []);
+
+  // Track route changes
+  useEffect(() => {
+    // trackRouteChange(window.location.pathname);
+  }, []);
 
   // Handle welcome toast when user logs in
   useEffect(() => {

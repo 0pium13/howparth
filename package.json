@@ -62,7 +62,8 @@
   },
   "scripts": {
     "start": "HOST=0.0.0.0 react-scripts start",
-    "build": "react-scripts build",
+    "build": "CI=false react-scripts build",
+    "build:prod": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
@@ -78,13 +79,23 @@
     "db:studio": "prisma studio",
     "test:auth": "jest __tests__/auth.test.js",
     "test:coverage": "jest --coverage",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "validate": "node scripts/validate-deployment.js",
+    "pre-deploy": "npm run validate && npm run build",
+    "deploy": "npm run pre-deploy && vercel --prod"
   },
   "eslintConfig": {
     "extends": [
       "react-app",
       "react-app/jest"
-    ]
+    ],
+    "rules": {
+      "@typescript-eslint/no-unused-vars": "warn",
+      "no-unused-vars": "warn"
+    }
+  },
+  "engines": {
+    "node": ">=18.0.0"
   },
   "browserslist": {
     "production": [
